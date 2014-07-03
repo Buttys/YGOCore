@@ -4,7 +4,7 @@ YGOCore is a duel server for the popular game YGOPro written in C#.
 
 ## Beta Details ##
 
-The main goal of this project is to lower the entry level for new and experienced programmers, who just don't have the time required or understanding into something quite complex.
+The main goal of this project is to lower the entry level for new and experienced programmers.
 
 This server currently only runs on windows, but will fully support Linux using Mono when fully released.
 
@@ -12,10 +12,10 @@ A sample client to work with the server will be provided in the near future.
 
 ## Supported Features ##
 
-Single, Match and Tag duelling modes.
-Joining games in progress.
-Semi-automatic match making system.
-Duel setting customization. 
+* Single, Match and Tag dueling modes.
+* Joining games in progress.
+* Semi-automatic match making system.
+* Duel setting customization. 
 
 ## How to use ##
 
@@ -30,3 +30,5 @@ lflist.conf
 OcgWrapper.dll
 System.Data.SQLite.dll
 ocgcore.dll
+
+In order for users to connect to the server you will need to port forward the relevant port, in this case 8911 is used by default.
