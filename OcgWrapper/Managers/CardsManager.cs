@@ -1,5 +1,12 @@
 ﻿using System.Collections.Generic;
+#if __MonoCS__
+using Mono.Data.Sqlite;
+using SQLiteConnection = Mono.Data.Sqlite.SqliteConnection;
+using SQLiteCommand = Mono.Data.Sqlite.SqliteCommand;
+using SQLiteDataReader = Mono.Data.Sqlite.SqliteDataReader;
+#else
 using System.Data.SQLite;
+#endif
 
 namespace OcgWrapper.Managers
 {
