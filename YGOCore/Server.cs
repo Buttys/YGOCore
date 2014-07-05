@@ -11,29 +11,33 @@ namespace YGOCore
     {
         public bool IsListening { get; private set; }
         private TcpListener m_listener;
-        private ServerConfig m_config;
+        public ServerConfig Config { get; private set; }
         private List<GameClient> m_clients;
 
         public Server()
         {
-            //load server basics here
-            m_config = new ServerConfig();
+            Config = new ServerConfig();
             m_clients = new List<GameClient>();
+
+            if (Config.Load())
+                Logger.WriteLine("Config loaded.");
+            else
+                Logger.WriteLine("Unable to load config.txt, using default settings.");
         }
 
         public bool Start(int port = 0)
         {
             try
             {
-                Api.Init(m_config.Path,m_config.ScriptFolder,m_config.CardCDB);
-                BanlistManager.Init(m_config.BanlistFile);
-                m_listener = new TcpListener(IPAddress.Any,port == 0 ? m_config.ServerPort: port);
+                Api.Init(Config.Path, Config.ScriptFolder, Config.CardCDB);
+                BanlistManager.Init(Config.BanlistFile);
+                m_listener = new TcpListener(IPAddress.Any, port == 0 ? Config.ServerPort : port);
                 m_listener.Start();
                 IsListening = true;
             }
             catch (SocketException)
             {
-                Logger.WriteError("The " + (port == 0 ? m_config.ServerPort : port) + " port is currently in use.");
+                Logger.WriteError("The " + (port == 0 ? Config.ServerPort : port) + " port is currently in use.");
                 return false;
             }
             catch (Exception e)
@@ -42,7 +46,7 @@ namespace YGOCore
                 return false;
             }
 
-            Logger.WriteLine("Listening on port " + (port == 0 ? m_config.ServerPort : port));
+            Logger.WriteLine("Listening on port " + (port == 0 ? Config.ServerPort : port));
             return true;
         }
 

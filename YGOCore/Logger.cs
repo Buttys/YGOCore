@@ -1,16 +1,15 @@
 ﻿using System;
+using System.IO;
 
 namespace YGOCore
 {
     public static class Logger
     {
-
         public static bool EnableLog { get; set; }
 
         public static void WriteLine(object text)
         {
             Console.WriteLine("[Log] " + text);
-            WriteLog("[Log] " + text);
         }
 
         public static void WriteError(object error)
@@ -22,14 +21,22 @@ namespace YGOCore
         public static void WriteLine(string type, object text)
         {
             Console.WriteLine("[" + type + "] " + text);
-            WriteLog("[" + type + "] " + text);
         }
 
         private static void WriteLog(string text)
         {
             if (EnableLog)
             {
-                //write to file
+                try
+                {
+                    StreamWriter writer = new StreamWriter("ErrorLog.txt", true);
+                    writer.WriteLine(text);
+                    writer.Close();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
         }
     }
