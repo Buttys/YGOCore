@@ -2,7 +2,7 @@ language: c
 
 before_script:
   - sudo apt-get update
-  - sudo apt-get -y install mono-complete libmono-sqlite
+  - sudo apt-get -y install mono-complete libmono-sqlite2.0-cil
 
 script:
   - xbuild /p:TargetFrameworkProfile=""
