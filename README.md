@@ -6,7 +6,7 @@ YGOCore is a duel server for the popular game YGOPro written in C#.
 
 The main goal of this project is to lower the entry level for new and experienced programmers.
 
-This server currently only runs on windows, but will fully support Linux using Mono when fully released.
+This server currently only runs on windows, but will fully support Linux using Mono when fully released (currently in testing).
 
 A sample client to work with the server will be provided in the near future. 
 
