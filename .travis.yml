@@ -3,6 +3,19 @@ language: c
 before_script:
   - sudo apt-get update
   - sudo apt-get -y install mono-complete libmono-sqlite4.0-cil
+  - travis setup releases
 
 script:
   - xbuild /p:TargetFrameworkProfile=""
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  on:
+    all_branches: true
+    tags: true
+  file:
+    - "OcgWrapper/System.Data.SQLite.dll"
+    - "YGOCore/bin/Debug/OcgWrapper.dll"
+    - "YGOCore/bin/Debug/YGOServer.exe"
+  
