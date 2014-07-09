@@ -19,5 +19,5 @@ deploy:
     tags: true
   file:
     - "OcgWrapper/System.Data.SQLite.dll"
-    - "YGOCore/bin/Debug/OcgWrapper.dll"
-    - "YGOCore/bin/Debug/YGOServer.exe"
+    - "YGOCore/bin/Release/OcgWrapper.dll"
+    - "YGOCore/bin/Release/YGOServer.exe"
