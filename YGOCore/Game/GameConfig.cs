@@ -36,6 +36,27 @@ namespace YGOCore.Game
                 Load(info);
         }
 
+        public GameConfig(GameClientPacket packet)
+        {
+            LfList = BanlistManager.GetIndex(packet.ReadUInt32());
+            Rule = packet.ReadByte();
+            Mode = packet.ReadByte();
+            EnablePriority = Convert.ToBoolean(packet.ReadByte());
+            NoCheckDeck = Convert.ToBoolean(packet.ReadByte());
+            NoShuffleDeck = Convert.ToBoolean(packet.ReadByte());
+            //C++ padding: 5 bytes + 3 bytes = 8 bytes
+            for (int i = 0; i < 3; i++)
+                packet.ReadByte();
+            StartLp = packet.ReadInt32();
+            StartHand = packet.ReadByte();
+            DrawCount = packet.ReadByte();
+            GameTimer = packet.ReadInt16();
+            packet.ReadUnicode(20);
+            Name = packet.ReadUnicode(30);
+            if (string.IsNullOrEmpty(Name))
+                Name = GameManager.RandomRoomName();
+        }
+
         public void Load(string gameinfo)
         {
             try

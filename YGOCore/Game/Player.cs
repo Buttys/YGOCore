@@ -61,6 +61,9 @@ namespace YGOCore.Game
                 case CtosMessage.JoinGame:
                     OnJoinGame(packet);
                     break;
+                case CtosMessage.CreateGame:
+                    OnCreateGame(packet);
+                    break;
             }
             if (!IsAuthentified)
                 return;
@@ -113,6 +116,27 @@ namespace YGOCore.Game
             if (Name != null)
                 return;
             Name = packet.ReadUnicode(20);
+        }
+
+        private void OnCreateGame(GameClientPacket packet)
+        {
+            if (Name == null || Type != (int)PlayerType.Undefined)
+                return;
+
+            GameRoom room = null;
+
+            room = GameManager.CreateOrGetGame(new GameConfig(packet));
+
+            if (room == null)
+            {
+                LobbyError("Server Full");
+                return;
+            }
+
+            Game = room.Game;
+            Game.AddPlayer(this);
+            IsAuthentified = true;
+            
         }
 
         private void OnJoinGame(GameClientPacket packet)
