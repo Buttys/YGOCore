@@ -116,11 +116,14 @@ namespace YGOCore.Game
             if (Name != null)
                 return;
             Name = packet.ReadUnicode(20);
+
+            if (string.IsNullOrEmpty(Name))
+                LobbyError("Username Required");
         }
 
         private void OnCreateGame(GameClientPacket packet)
         {
-            if (Name == null || Type != (int)PlayerType.Undefined)
+            if (string.IsNullOrEmpty(Name) || Type != (int)PlayerType.Undefined)
                 return;
 
             GameRoom room = null;
@@ -141,8 +144,9 @@ namespace YGOCore.Game
 
         private void OnJoinGame(GameClientPacket packet)
         {
-            if (Name == null || Type != (int)PlayerType.Undefined)
+            if (string.IsNullOrEmpty(Name) || Type != (int)PlayerType.Undefined)
                 return;
+
             int version = packet.ReadInt16();
             if (version != Program.ProVersion)
                 return;
