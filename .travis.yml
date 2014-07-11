@@ -7,6 +7,9 @@ before_script:
 script:
   - xbuild /p:TargetFrameworkProfile="" /p:Configuration=Release
 
+after_success:
+  - find / -name 'Mono.Data.Sqlite.dll'
+
 env:
   - secure: "NFfeQJbA3rVU+mbG8ljXq3USaw2RU4/AffWSPvm6TiSfXoBiELDz6fT08+jD8MIkjbBEvJYYu20yG7vJaqxCnO/P3WAsQaR3nwDeTbsJ6Hu7604iaTKKj+C7+ER7hMFb0d7ETeiQdLLNP+JxRWnCVK01ct6bcpRBUPYZGyQqicA="
 
