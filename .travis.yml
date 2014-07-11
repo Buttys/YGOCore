@@ -18,6 +18,6 @@ deploy:
     all_branches: true
     tags: true
   file:
-    - "OcgWrapper/System.Data.SQLite.dll"
+    - "/usr/lib/mono/4.0/Mono.Data.Sqlite.dll"
     - "YGOCore/bin/Release/OcgWrapper.dll"
     - "YGOCore/bin/Release/YGOServer.exe"
