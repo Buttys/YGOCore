@@ -1,34 +1,42 @@
 ﻿using System.IO;
 using System;
+using System.Globalization;
 namespace YGOCore
 {
     public class ServerConfig
     {
-        public int ServerPort { get; set; }
-        public string Path { get; set; }
-        public string ScriptFolder { get; set; }
-        public string CardCDB { get; set; }
-        public string BanlistFile { get; set; }
-        public bool EnableLog { get; set; }
+        public int ServerPort { get; private set; }
+        public string Path { get; private set; }
+        public string ScriptFolder { get; private set; }
+        public string CardCDB { get; private set; }
+        public string BanlistFile { get; private set; }
+        public bool Log { get; private set; }
+        public bool HandShuffle { get; private set; }
+        public bool AutoEndTurn { get; private set; }
+        public int ClientVersion { get; private set; }
 
         public ServerConfig()
         {
+            ClientVersion = 0x1330;
             ServerPort = 8911;
             Path = ".";
             ScriptFolder = "script";
             CardCDB = "cards.cdb";
             BanlistFile = "lflist.conf";
-            EnableLog = true;
-            Logger.EnableLog = EnableLog;
+            Log = true;
+            HandShuffle = false;
+            AutoEndTurn = true;
+            Logger.EnableLog = Log;
         }
 
         public bool Load(string file = "config.txt")
         {
             if (File.Exists(file))
             {
-                var reader = new StreamReader(File.OpenRead(file));
+                StreamReader reader = null;
                 try
                 {
+                    reader = new StreamReader(File.OpenRead(file));
                     while (!reader.EndOfStream)
                     {
                         string line = reader.ReadLine();
@@ -59,18 +67,30 @@ namespace YGOCore
                                 BanlistFile = value;
                                 break;
                             case "errorlog":
-                                EnableLog = Convert.ToBoolean(value);
+                                Log = Convert.ToBoolean(value);
+                                break;
+                            case "handshuffle":
+                                HandShuffle = Convert.ToBoolean(value);
+                                break;
+                            case "autoendturn":
+                                AutoEndTurn = Convert.ToBoolean(value);
+                                break;
+                            case "clientversion":
+                                ClientVersion = Convert.ToInt32(value, 16);
                                 break;
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Logger.WriteError(ex);
                     reader.Close();
                     return false;
                 }
                 reader.Close();
-                Logger.EnableLog = EnableLog;
+                Logger.EnableLog = Log;
+                if (HandShuffle)
+                    Logger.WriteLine("Warning: Hand shuffle requires a custom ocgcore to work.");
                 return true;
             }
 

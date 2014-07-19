@@ -148,8 +148,14 @@ namespace YGOCore.Game
                 return;
 
             int version = packet.ReadInt16();
-            if (version != Program.ProVersion)
+            if (version < Program.Config.ClientVersion)
+            {
+                LobbyError("Version too low");
                 return;
+            }
+            else if (version > Program.Config.ClientVersion)
+                ServerMessage("Warning: client version is higher than servers.");
+                
 
             packet.ReadInt32();//gameid
             packet.ReadInt16();
@@ -265,7 +271,7 @@ namespace YGOCore.Game
                 }
                 Deck = deck;
                 Game.IsReady[Type] = true;
-                Game.CustomMessage(Name + " is ready.");
+                Game.ServerMessage(Name + " is ready.");
                 Send(new GameServerPacket(StocMessage.DuelStart));
                 Game.MatchSide();
             }
@@ -306,6 +312,15 @@ namespace YGOCore.Game
             enter.Write("[" + message + "]", 20);
             enter.Write((byte)0);
             Send(enter);
+        }
+
+        private void ServerMessage(string msg)
+        {
+            string finalmsg = "[Server] " + msg;
+            GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
+            packet.Write((short)PlayerType.Yellow);
+            packet.Write(finalmsg, finalmsg.Length + 1);
+            Send(packet);
         }
     }
 }

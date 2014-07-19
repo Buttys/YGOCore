@@ -311,7 +311,7 @@ namespace YGOCore.Game
             count = msg.Reader.ReadByte();
             msg.Reader.ReadBytes(count * 7);
             count = msg.Reader.ReadByte();
-			msg.Reader.ReadBytes(count * 11 + 2);
+			msg.Reader.ReadBytes(count * 11 + (Program.Config.HandShuffle ? 3 : 2));
 
             Game.RefreshAll();
             Game.WaitForResponse(player);

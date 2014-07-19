@@ -20,7 +20,7 @@ namespace YGOCore.Game
         public Replay(uint seed, bool tag)
         {
             Header.Id = 0x31707279;
-            Header.Version = Program.ProVersion;
+            Header.Version = (uint)Program.Config.ClientVersion;
             Header.Flag = tag ? FlagTag : 0;
             Header.Seed = seed;
 

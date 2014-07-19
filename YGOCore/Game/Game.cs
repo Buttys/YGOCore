@@ -306,7 +306,7 @@ namespace YGOCore.Game
             SendToAllBut(packet, player);
         }
 
-        public void CustomMessage(string msg)
+        public void ServerMessage(string msg)
         {
             string finalmsg = "[Server] " + msg;
             GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
@@ -850,7 +850,7 @@ namespace YGOCore.Game
             {
                 IsReady[0] = false;
                 IsReady[1] = false;
-                CustomMessage("You have 120 seconds to side!");
+                ServerMessage("You have 120 seconds to side!");
                 SideTimer = DateTime.UtcNow;
                 State = GameState.Side;
                 SendToPlayers(new GameServerPacket(StocMessage.ChangeSide));
@@ -904,17 +904,22 @@ namespace YGOCore.Game
                         if (m_analyser.LastMessage == GameMessage.SelectIdleCmd ||
                             m_analyser.LastMessage == GameMessage.SelectBattleCmd)
                         {
-                            if (Players[m_lastresponse].TurnSkip == 2)
+                            if (Program.Config.AutoEndTurn)
                             {
-                                Surrender(Players[m_lastresponse], 3);
+                                if (Players[m_lastresponse].TurnSkip == 2)
+                                {
+                                    Surrender(Players[m_lastresponse], 3);
+                                }
+                                else
+                                {
+                                    Players[m_lastresponse].State = PlayerState.None;
+                                    Players[m_lastresponse].TurnSkip++;
+                                    SetResponse(m_analyser.LastMessage == GameMessage.SelectIdleCmd ? 7 : 3);
+                                    Process();
+                                }
                             }
                             else
-                            {
-                                Players[m_lastresponse].State = PlayerState.None;
-                                Players[m_lastresponse].TurnSkip++;
-                                SetResponse(m_analyser.LastMessage == GameMessage.SelectIdleCmd ? 7 : 3);
-                                Process();
-                            }
+                                Surrender(Players[m_lastresponse], 3);
                         }
                         else if (elapsed.TotalSeconds > m_timelimit[m_lastresponse] + 30)
                             Surrender(Players[m_lastresponse], 3);
@@ -930,7 +935,7 @@ namespace YGOCore.Game
                 {
                     if (m_lasttick != currentTick)
                     {
-                        CustomMessage("You have " + currentTick + " seconds left.");
+                        ServerMessage("You have " + currentTick + " seconds left.");
                         m_lasttick = currentTick;
                     }
                 }
@@ -962,7 +967,7 @@ namespace YGOCore.Game
                     {
                         if (m_lasttick != currentTick)
                         {
-                            CustomMessage("You have " + currentTick + " seconds left.");
+                            ServerMessage("You have " + currentTick + " seconds left.");
                             m_lasttick = currentTick;
                         }
                     }
@@ -985,7 +990,7 @@ namespace YGOCore.Game
                 {
                     if (m_lasttick != currentTick)
                     {
-                        CustomMessage("You have " + currentTick + " seconds left.");
+                        ServerMessage("You have " + currentTick + " seconds left.");
                         m_lasttick = currentTick;
                     }
                 }

@@ -7,9 +7,9 @@ namespace YGOCore
 {
     class Program
     {
-        public const int ProVersion = 0x1330;
-        const string Version = "0.1 Beta";
+        const string Version = "0.2 Beta";
 
+        public static ServerConfig Config { get; private set; }
         public static Random Random;
         
         static void Main(string[] args)
@@ -31,6 +31,7 @@ namespace YGOCore
                 int.TryParse(args[0], out coreport);
 
             Random = new Random();
+            Config = new ServerConfig();
             Server server = new Server();
             if (!server.Start(coreport))
                 Thread.Sleep(5000);
