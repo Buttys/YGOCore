@@ -5,27 +5,29 @@ namespace YGOCore
 {
     public static class Logger
     {
-        public static bool EnableLog { get; set; }
 
-        public static void WriteLine(object text)
+        public static void WriteLine(object text, bool useTag = true)
         {
-            Console.WriteLine("[Log] " + text);
+            if(Program.Config.ConsoleLog)
+                Console.WriteLine((useTag ? "[Log] ": "") + text);
         }
 
         public static void WriteError(object error)
         {
-            Console.WriteLine("[Error] " + error);
-            WriteLog("[Error] " + error);
+            if (Program.Config.ConsoleLog)
+                Console.WriteLine("[Error] " + error);
+            WriteError("[Error] " + error);
         }
 
-        public static void WriteLine(string type, object text)
+        public static void WriteLine(object type, object text)
         {
-            Console.WriteLine("[" + type + "] " + text);
+            if (Program.Config.ConsoleLog)
+                Console.WriteLine("[" + type + "] " + text);
         }
 
-        private static void WriteLog(string text)
+        private static void WriteError(string text)
         {
-            if (EnableLog)
+            if (Program.Config.Log)
             {
                 try
                 {
@@ -35,7 +37,8 @@ namespace YGOCore
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    if (Program.Config.ConsoleLog)
+                        Console.WriteLine(ex);
                 }
             }
         }

@@ -16,11 +16,6 @@ namespace YGOCore
         public Server()
         {
             m_clients = new List<GameClient>();
-
-            if (Program.Config.Load())
-                Logger.WriteLine("Config loaded.");
-            else
-                Logger.WriteLine("Unable to load config.txt, using default settings.");
         }
 
         public bool Start(int port = 0)

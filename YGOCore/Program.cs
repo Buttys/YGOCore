@@ -14,16 +14,23 @@ namespace YGOCore
         
         static void Main(string[] args)
         {
-
-            Console.WriteLine(" __     _______  ____   _____");            
-            Console.WriteLine(" \\ \\   / / ____|/ __ \\ / ____|");              
-            Console.WriteLine("  \\ \\_/ / |  __| |  | | |     ___  _ __ ___");
-            Console.WriteLine("   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\");
-            Console.WriteLine("    | | | |__| | |__| | |___| (_) | | |  __/");
-            Console.WriteLine("    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|               Version: " + Version);
-            Console.WriteLine("");
-
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
+            Config = new ServerConfig();
+            bool loaded = Config.Load();
+
+            Logger.WriteLine(" __     _______  ____   _____",false);
+            Logger.WriteLine(" \\ \\   / / ____|/ __ \\ / ____|", false);
+            Logger.WriteLine("  \\ \\_/ / |  __| |  | | |     ___  _ __ ___", false);
+            Logger.WriteLine("   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\", false);
+            Logger.WriteLine("    | | | |__| | |__| | |___| (_) | | |  __/", false);
+            Logger.WriteLine("    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|               Version: " + Version, false);
+            Logger.WriteLine(string.Empty, false);
+
+            if(loaded)
+                Logger.WriteLine("Config loaded.");
+            else
+                Logger.WriteLine("Unable to load config.txt, using default settings.");
 
             int coreport = 0;
 
@@ -31,7 +38,7 @@ namespace YGOCore
                 int.TryParse(args[0], out coreport);
 
             Random = new Random();
-            Config = new ServerConfig();
+            
             Server server = new Server();
             if (!server.Start(coreport))
                 Thread.Sleep(5000);

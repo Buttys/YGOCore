@@ -11,6 +11,7 @@ namespace YGOCore
         public string CardCDB { get; private set; }
         public string BanlistFile { get; private set; }
         public bool Log { get; private set; }
+        public bool ConsoleLog { get; private set; }
         public bool HandShuffle { get; private set; }
         public bool AutoEndTurn { get; private set; }
         public int ClientVersion { get; private set; }
@@ -24,9 +25,9 @@ namespace YGOCore
             CardCDB = "cards.cdb";
             BanlistFile = "lflist.conf";
             Log = true;
+            ConsoleLog = true;
             HandShuffle = false;
             AutoEndTurn = true;
-            Logger.EnableLog = Log;
         }
 
         public bool Load(string file = "config.txt")
@@ -69,6 +70,9 @@ namespace YGOCore
                             case "errorlog":
                                 Log = Convert.ToBoolean(value);
                                 break;
+                            case "consolelog":
+                                ConsoleLog = Convert.ToBoolean(value);
+                                break;
                             case "handshuffle":
                                 HandShuffle = Convert.ToBoolean(value);
                                 break;
@@ -88,7 +92,6 @@ namespace YGOCore
                     return false;
                 }
                 reader.Close();
-                Logger.EnableLog = Log;
                 if (HandShuffle)
                     Logger.WriteLine("Warning: Hand shuffle requires a custom ocgcore to work.");
                 return true;
