@@ -17,7 +17,7 @@ namespace YGOCore
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
             Config = new ServerConfig();
-            bool loaded = Config.Load();
+            bool loaded = args.Length > 1 ? Config.Load(args[1]): Config.Load();
 
             Logger.WriteLine(" __     _______  ____   _____",false);
             Logger.WriteLine(" \\ \\   / / ____|/ __ \\ / ____|", false);
