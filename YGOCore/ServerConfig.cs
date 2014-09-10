@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System;
 using System.Globalization;
 namespace YGOCore
@@ -18,7 +18,7 @@ namespace YGOCore
 
         public ServerConfig()
         {
-            ClientVersion = 0x1330;
+            ClientVersion = 0x1332;
             ServerPort = 8911;
             Path = ".";
             ScriptFolder = "script";

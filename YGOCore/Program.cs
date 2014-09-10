@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.IO;
 using System.Diagnostics;
@@ -31,6 +31,8 @@ namespace YGOCore
                 Logger.WriteLine("Config loaded.");
             else
                 Logger.WriteLine("Unable to load config.txt, using default settings.");
+
+            Logger.WriteLine("Accepting client version 0x" + Config.ClientVersion.ToString("x") + " or better.");
 
             int coreport = 0;
 
