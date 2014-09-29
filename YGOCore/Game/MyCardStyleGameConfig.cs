@@ -53,19 +53,14 @@ namespace YGOCore.Game
 				} else {
 					string[] ParamSeg = info.Split (',');
 					if (ParamSeg.Length == 4) {
-						if (ParamSeg[0].Length == 6) {
-							CharEnumerator ce = ParamSeg [0].GetEnumerator ();
-							Rule = int.Parse (ce.Current.ToString());
-							ce.MoveNext();
-							Mode = int.Parse (ce.Current.ToString());
-							ce.MoveNext();
-							EnablePriority = ce.Current.Equals('T');
-							ce.MoveNext();
-							NoCheckDeck = ce.Current.Equals('T');
-							ce.MoveNext();
-							NoShuffleDeck = ce.Current.Equals('T');
-							ce.MoveNext();
-							StartLp =int.Parse (ce.Current.ToString());
+						if (ParamSeg[0].Length >= 6) {
+							string ConfigStr = ParamSeg[0];
+							Rule = int.Parse (ConfigStr[0].ToString());
+							Mode = int.Parse (ConfigStr[1].ToString());
+							EnablePriority = ConfigStr[2].Equals('T');
+							NoCheckDeck =  ConfigStr[3].Equals('T');
+							NoShuffleDeck = ConfigStr[4].Equals('T');
+							StartLp = int.Parse (ConfigStr.Substring(5, ConfigStr.Length - 5));
 							StartHand = int.Parse(ParamSeg[1]);
 							DrawCount = int.Parse(ParamSeg[2]);
 							Name = ParamSeg[3];
