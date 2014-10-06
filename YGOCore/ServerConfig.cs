@@ -22,7 +22,8 @@ namespace YGOCore
 		public bool UserInfoGameStart { get; private set; }
 		public bool UserInfoGameEnd { get; private set; }
 		public bool UserInfoSlot { get; private set; }
-			 
+        public bool DisplayChat { get; private set; }
+
 			 
 			   
 			 
@@ -45,6 +46,7 @@ namespace YGOCore
 			UserInfoGameStart = false;
 			UserInfoGameEnd = false;
 			UserInfoSlot = false;
+            DisplayChat = false;
 			
         }
 
@@ -106,7 +108,7 @@ namespace YGOCore
 							case "ready":
                                 Ready   = Convert.ToBoolean(value);
                                 break;
-							case "userinfoconnected":  //currently name and position
+							case "userinfoconnected":
                                 UserInfoConnected   = Convert.ToBoolean(value);
                                 break;
 							case "userinfolockedin":
@@ -118,9 +120,13 @@ namespace YGOCore
 							case "userinfogameend":
                                 UserInfoGameEnd  = Convert.ToBoolean(value);
                                 break;	
-							case "userinfoslot": //This is for moving to observer atm.
+							case "userinfoslot":
                                 UserInfoSlot  = Convert.ToBoolean(value);
                                 break;
+                            case "displaychat":
+                                DisplayChat = Convert.ToBoolean(value);
+                                break;
+                                
                         }
                     }
                 }
