@@ -319,6 +319,8 @@ namespace YGOCore.Game
             packet.Write((short)player.Type);
             packet.Write(msg, msg.Length + 1);
             SendToAllBut(packet, player);
+            if (Program.Config.DisplayChat == true)
+                Console.WriteLine("{0}: {1}", player.Name,msg);
         }
 
         public void ServerMessage(string msg)
