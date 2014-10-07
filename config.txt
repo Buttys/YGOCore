@@ -1,0 +1,14 @@
+scriptfolder = ../script
+cardcdb = cards.cdb 	
+banlist = lflist.conf
+log = true
+consolelog = true
+HandShuffle = false
+AutoEndTurn = true
+splashscreen = false
+ready = false
+userinfoconnected = false
+userinfolocked = false
+userinfogameStart = false
+userinfogameEnd = false
+userinfoslot = false		

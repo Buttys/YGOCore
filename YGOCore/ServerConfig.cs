@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System;
 using System.Globalization;
 namespace YGOCore
@@ -15,10 +15,21 @@ namespace YGOCore
         public bool HandShuffle { get; private set; }
         public bool AutoEndTurn { get; private set; }
         public int ClientVersion { get; private set; }
+		public bool SplashScreen { get; private set; }
+		public bool Ready { get; private set; }
+		public bool UserInfoConnected { get; private set; }
+		public bool UserInfoLocked { get; private set; }
+		public bool UserInfoGameStart { get; private set; }
+		public bool UserInfoGameEnd { get; private set; }
+		public bool UserInfoSlot { get; private set; }
+        public bool DisplayChat { get; private set; }
 
+			 
+			   
+			 
         public ServerConfig()
         {
-            ClientVersion = 0x1330;
+            ClientVersion = 0x1332;
             ServerPort = 8911;
             Path = ".";
             ScriptFolder = "script";
@@ -28,6 +39,15 @@ namespace YGOCore
             ConsoleLog = true;
             HandShuffle = false;
             AutoEndTurn = true;
+			SplashScreen = true;
+			Ready = false;
+			UserInfoConnected = false;
+			UserInfoLocked = false;
+			UserInfoGameStart = false;
+			UserInfoGameEnd = false;
+			UserInfoSlot = false;
+            DisplayChat = false;
+			
         }
 
         public bool Load(string file = "config.txt")
@@ -82,6 +102,31 @@ namespace YGOCore
                             case "clientversion":
                                 ClientVersion = Convert.ToInt32(value, 16);
                                 break;
+							case "splashscreen":
+                                SplashScreen = Convert.ToBoolean(value);
+                                break;
+							case "ready":
+                                Ready   = Convert.ToBoolean(value);
+                                break;
+							case "userinfoconnected":
+                                UserInfoConnected   = Convert.ToBoolean(value);
+                                break;
+							case "userinfolockedin":
+                                UserInfoLocked  = Convert.ToBoolean(value);
+                                break;
+							case "userinfogamestart":
+                                UserInfoGameStart  = Convert.ToBoolean(value);
+                                break;	
+							case "userinfogameend":
+                                UserInfoGameEnd  = Convert.ToBoolean(value);
+                                break;	
+							case "userinfoslot":
+                                UserInfoSlot  = Convert.ToBoolean(value);
+                                break;
+                            case "displaychat":
+                                DisplayChat = Convert.ToBoolean(value);
+                                break;
+                                
                         }
                     }
                 }

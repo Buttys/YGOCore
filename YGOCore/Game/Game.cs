@@ -1,9 +1,10 @@
-﻿using System;
+    using System;
 using System.Collections.Generic;
 using System.IO;
 using OcgWrapper;
 using OcgWrapper.Enums;
 using YGOCore.Game.Enums;
+using YGOCore;
 
 namespace YGOCore.Game
 {
@@ -67,6 +68,8 @@ namespace YGOCore.Game
                 Banlist = BanlistManager.Banlists[config.LfList];
             m_room = room;
             m_analyser = new GameAnalyser(this);
+            if (Program.Config.Ready == true)
+                     Console.WriteLine("Ready");
         }
 
         public void ReloadGameConfig(string gameinfo)
@@ -147,6 +150,8 @@ namespace YGOCore.Game
                 player.SendTypeChange();
                 player.Send(new GameServerPacket(StocMessage.DuelStart));
                 Observers.Add(player);
+               
+
                 if (State == GameState.Duel)
                     InitNewSpectator(player);
                 return;
@@ -166,6 +171,9 @@ namespace YGOCore.Game
                 Players[pos] = player;
                 IsReady[pos] = false;
                 player.Type = pos;
+
+                if (Program.Config.UserInfoConnected == true)
+                    Console.WriteLine("{0} -  {1}.", player.Name, pos);
             }
             else
             {
@@ -175,6 +183,9 @@ namespace YGOCore.Game
 
                 player.Type = (int)PlayerType.Observer;
                 Observers.Add(player);
+                if (Program.Config.UserInfoConnected == true)
+                    Console.WriteLine("{0} - Observing.", player.Name);
+               
             }
 
             SendJoinGame(player);
@@ -219,6 +230,8 @@ namespace YGOCore.Game
                     nwatch.Write((short) Observers.Count);
                     SendToAll(nwatch);
                 }
+                if (Program.Config.UserInfoConnected == true)
+                    Console.WriteLine("{0} - disconnected", player.Name);
                 player.Disconnect();
             }
             else if (State == GameState.Lobby)
@@ -296,6 +309,8 @@ namespace YGOCore.Game
 
             player.Type = (int)PlayerType.Observer;
             player.SendTypeChange();
+            if (Program.Config.UserInfoSlot == true)
+                Console.WriteLine("{0} - Moved to Observer", player.Name);
         }
 
         public void Chat(Player player, string msg)
@@ -304,6 +319,8 @@ namespace YGOCore.Game
             packet.Write((short)player.Type);
             packet.Write(msg, msg.Length + 1);
             SendToAllBut(packet, player);
+            if (Program.Config.DisplayChat == true)
+                Console.WriteLine("{0}: {1}", player.Name,msg);
         }
 
         public void ServerMessage(string msg)
@@ -350,7 +367,8 @@ namespace YGOCore.Game
             }
 
             IsReady[player.Type] = ready;
-
+            if (Program.Config.UserInfoLocked == true)
+                Console.WriteLine("Lock - {0}",player.Name);
             GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
             change.Write((byte)((player.Type << 4) + (int)(ready ? PlayerChange.Ready : PlayerChange.NotReady)));
             SendToAll(change);
@@ -380,6 +398,9 @@ namespace YGOCore.Game
             }
 
             State = GameState.Hand;
+            if (Program.Config.UserInfoGameStart == true)
+                Console.WriteLine("Game is Starting", player.Name);
+
             SendToAll(new GameServerPacket(StocMessage.DuelStart));
 
             SendHand();
@@ -584,6 +605,9 @@ namespace YGOCore.Game
             if (player.Type == (int)PlayerType.Observer)
                 return;
             GameServerPacket win = new GameServerPacket(GameMessage.Win);
+            if (Program.Config.UserInfoGameEnd == true)
+                Console.WriteLine("Surrender - {0}", player.Name);
+
             int team = player.Type;
             if (IsTag)
                 team = player.Type >= 2 ? 1 : 0;
