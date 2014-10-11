@@ -55,7 +55,7 @@ namespace YGOCore
 
             if (server.IsListening == true && Config.Ready == true)
             {
-                Logger.WriteLine("Server is Ready for connections");
+                Logger.WriteLine("::::network-ready");
 
             }
             while (server.IsListening)
@@ -65,7 +65,8 @@ namespace YGOCore
           
                 
             }
-
+            Logger.WriteLine("::::network-end");
+            Process.GetCurrentProcess().Kill();
 
         }
 

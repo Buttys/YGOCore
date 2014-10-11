@@ -68,8 +68,6 @@ namespace YGOCore.Game
                 Banlist = BanlistManager.Banlists[config.LfList];
             m_room = room;
             m_analyser = new GameAnalyser(this);
-            if (Program.Config.Ready == true)
-                     Console.WriteLine("Ready");
         }
 
         public void ReloadGameConfig(string gameinfo)
@@ -173,7 +171,7 @@ namespace YGOCore.Game
                 player.Type = pos;
 
                 if (Program.Config.UserInfoConnected == true)
-                    Console.WriteLine("{0} -  {1}.", player.Name, pos);
+                    Console.WriteLine("::::join-slot-{1}|{0}", player.Name, pos);
             }
             else
             {
@@ -184,7 +182,7 @@ namespace YGOCore.Game
                 player.Type = (int)PlayerType.Observer;
                 Observers.Add(player);
                 if (Program.Config.UserInfoConnected == true)
-                    Console.WriteLine("{0} - Observing.", player.Name);
+                    Console.WriteLine("::::spectator|{0}", player.Name);
                
             }
 
@@ -238,6 +236,7 @@ namespace YGOCore.Game
             {
                 Players[player.Type] = null;
                 IsReady[player.Type] = false;
+
                 GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
                 change.Write((byte)((player.Type << 4) + (int) PlayerChange.Leave));
                 SendToAll(change);
@@ -320,7 +319,7 @@ namespace YGOCore.Game
             packet.Write(msg, msg.Length + 1);
             SendToAllBut(packet, player);
             if (Program.Config.DisplayChat == true)
-                Console.WriteLine("{0}: {1}", player.Name,msg);
+                Console.WriteLine("::::chat|{0}|{1}", player.Name, msg);
         }
 
         public void ServerMessage(string msg)
@@ -330,6 +329,8 @@ namespace YGOCore.Game
             packet.Write((short)PlayerType.Yellow);
             packet.Write(finalmsg, finalmsg.Length + 1);
             SendToAll(packet);
+            if (Program.Config.DisplayChat == true)
+                Console.WriteLine("::::chat|[Server]|{0}",  msg);
         }
 
         public void SetReady(Player player, bool ready)
@@ -367,8 +368,7 @@ namespace YGOCore.Game
             }
 
             IsReady[player.Type] = ready;
-            if (Program.Config.UserInfoLocked == true)
-                Console.WriteLine("Lock - {0}",player.Name);
+            
             GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
             change.Write((byte)((player.Type << 4) + (int)(ready ? PlayerChange.Ready : PlayerChange.NotReady)));
             SendToAll(change);
@@ -381,6 +381,8 @@ namespace YGOCore.Game
             if (pos >= Players.Length || !player.Equals(HostPlayer) || player.Equals(Players[pos]) || Players[pos] == null)
                 return;
             RemovePlayer(Players[pos]);
+            if (Program.Config.UserInfoLocked == true)
+                Console.WriteLine("::::left-slot-{1}|{0}", player.Name,pos);
         }
 
         public void StartDuel(Player player)
@@ -399,7 +401,7 @@ namespace YGOCore.Game
 
             State = GameState.Hand;
             if (Program.Config.UserInfoGameStart == true)
-                Console.WriteLine("Game is Starting", player.Name);
+                Console.WriteLine("::::startduel");
 
             SendToAll(new GameServerPacket(StocMessage.DuelStart));
 
@@ -625,6 +627,7 @@ namespace YGOCore.Game
         public void RecordWin(int team, int reason, bool force = false)
         {
             //Record user win here
+            Console.WriteLine("::::endduel|{0}|{1}",  team,  reason, force);
         }
 
         public void RefreshAll()
