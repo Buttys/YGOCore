@@ -33,7 +33,7 @@ namespace YGOCore
                 Logger.WriteLine(string.Empty, false);
 
             }
-            Logger.WriteLine("Accepting client version 0x" + Config.ClientVersion.ToString("x") + " or better.");
+            Logger.WriteLine("Accepting client version 0x" + Config.ClientVersion.ToString("x") + " or higher.");
 
 
             if (loaded)

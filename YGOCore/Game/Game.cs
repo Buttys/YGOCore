@@ -227,6 +227,7 @@ namespace YGOCore.Game
                     GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
                     nwatch.Write((short) Observers.Count);
                     SendToAll(nwatch);
+                    Console.WriteLine("::::spectator|{0}", Observers.Count);
                 }
                 if (Program.Config.UserInfoConnected == true)
                     Console.WriteLine("{0} - disconnected", player.Name);
@@ -239,6 +240,7 @@ namespace YGOCore.Game
 
                 GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
                 change.Write((byte)((player.Type << 4) + (int) PlayerChange.Leave));
+                Console.WriteLine("::::left-slot-{1}|{0}", player.Name, player.Type);
                 SendToAll(change);
                 player.Disconnect();
             }
@@ -284,6 +286,7 @@ namespace YGOCore.Game
 
                 GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
                 nwatch.Write((short)Observers.Count);
+                Console.WriteLine("::::spectator|{0}", Observers.Count);
                 SendToAll(nwatch);
 
                 player.SendTypeChange();
