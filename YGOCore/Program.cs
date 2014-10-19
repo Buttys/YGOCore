@@ -33,7 +33,7 @@ namespace YGOCore
                 Logger.WriteLine(string.Empty, false);
 
             }
-            Logger.WriteLine("Accepting client version 0x" + Config.ClientVersion.ToString("x") + " or better.");
+            Logger.WriteLine("Accepting client version 0x" + Config.ClientVersion.ToString("x") + " or higher.");
 
 
             if (loaded)
@@ -55,7 +55,7 @@ namespace YGOCore
 
             if (server.IsListening == true && Config.Ready == true)
             {
-                Logger.WriteLine("Server is Ready for connections");
+                Logger.WriteLine("::::network-ready");
 
             }
             while (server.IsListening)
@@ -65,7 +65,8 @@ namespace YGOCore
           
                 
             }
-
+            Logger.WriteLine("::::network-end");
+            Process.GetCurrentProcess().Kill();
 
         }
 
