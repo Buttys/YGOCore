@@ -177,6 +177,7 @@ namespace YGOCore.Game
             {
                 GameServerPacket watch = new GameServerPacket(StocMessage.HsWatchChange);
                 watch.Write((short)(Observers.Count + 1));
+                Console.WriteLine("::::spectator|{0}", Observers.Count);
                 SendToAll(watch);
 
                 player.Type = (int)PlayerType.Observer;
@@ -212,6 +213,7 @@ namespace YGOCore.Game
                 GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
                 nwatch.Write((short)Observers.Count);
                 player.Send(nwatch);
+                Console.WriteLine("::::spectator|{0}", Observers.Count);
             }
         }
 
@@ -312,7 +314,7 @@ namespace YGOCore.Game
             player.Type = (int)PlayerType.Observer;
             player.SendTypeChange();
             if (Program.Config.UserInfoSlot == true)
-                Console.WriteLine("{0} - Moved to Observer", player.Name);
+                Console.WriteLine("::::spectator|{0}", Observers.Count);
         }
 
         public void Chat(Player player, string msg)
@@ -374,6 +376,7 @@ namespace YGOCore.Game
             
             GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
             change.Write((byte)((player.Type << 4) + (int)(ready ? PlayerChange.Ready : PlayerChange.NotReady)));
+            Console.WriteLine("::::lock-slot-{1}|{0}",ready,player.Type);
             SendToAll(change);
         }
 
