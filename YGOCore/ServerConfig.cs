@@ -15,14 +15,10 @@ namespace YGOCore
         public bool HandShuffle { get; private set; }
         public bool AutoEndTurn { get; private set; }
         public int ClientVersion { get; private set; }
-		public bool SplashScreen { get; private set; }
-		public bool Ready { get; private set; }
-		public bool UserInfoConnected { get; private set; }
-		public bool UserInfoLocked { get; private set; }
-		public bool UserInfoGameStart { get; private set; }
-		public bool UserInfoGameEnd { get; private set; }
-		public bool UserInfoSlot { get; private set; }
-        public bool DisplayChat { get; private set; }
+	public bool SplashScreen { get; private set; }
+	public bool Ready { get; private set; }
+        public bool STDOUT { get; private set; }
+
 
 			 
 			   
@@ -41,13 +37,7 @@ namespace YGOCore
             AutoEndTurn = true;
 			SplashScreen = true;
 			Ready = false;
-			UserInfoConnected = false;
-			UserInfoLocked = false;
-			UserInfoGameStart = false;
-			UserInfoGameEnd = false;
-			UserInfoSlot = false;
-            DisplayChat = false;
-			
+            STDOUT = false;	
         }
 
         public bool Load(string file = "config.txt")
@@ -108,24 +98,11 @@ namespace YGOCore
 							case "ready":
                                 Ready   = Convert.ToBoolean(value);
                                 break;
-							case "userinfoconnected":
-                                UserInfoConnected   = Convert.ToBoolean(value);
+							case "stdoutsupport":
+                                STDOUT = Convert.ToBoolean(value);
                                 break;
-							case "userinfolockedin":
-                                UserInfoLocked  = Convert.ToBoolean(value);
-                                break;
-							case "userinfogamestart":
-                                UserInfoGameStart  = Convert.ToBoolean(value);
-                                break;	
-							case "userinfogameend":
-                                UserInfoGameEnd  = Convert.ToBoolean(value);
-                                break;	
-							case "userinfoslot":
-                                UserInfoSlot  = Convert.ToBoolean(value);
-                                break;
-                            case "displaychat":
-                                DisplayChat = Convert.ToBoolean(value);
-                                break;
+                      
+
                                 
                         }
                     }
