@@ -171,7 +171,7 @@ namespace YGOCore.Game
                 player.Type = pos;
 
                 if (Program.Config.STDOUT == true)
-                    Console.WriteLine("::::join-slot-{1}|{0}", player.Name, pos);
+                    Console.WriteLine("::::join-slot|{1}|{0}", player.Name, pos);
             }
             else
             {
@@ -244,7 +244,7 @@ namespace YGOCore.Game
                 GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
                 change.Write((byte)((player.Type << 4) + (int)PlayerChange.Leave));
                 if (Program.Config.STDOUT == true)
-                Console.WriteLine("::::left-slot-{1}|{0}", player.Name, player.Type);
+                    Console.WriteLine("::::left-slot|{1}|{0}", player.Name, player.Type);
 
                 SendToAll(change);
                 player.Disconnect();
@@ -381,7 +381,7 @@ namespace YGOCore.Game
             GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
             change.Write((byte)((player.Type << 4) + (int)(ready ? PlayerChange.Ready : PlayerChange.NotReady)));
             if (Program.Config.STDOUT == true)
-            Console.WriteLine("::::lock-slot-{1}|{0}", ready, player.Type);
+            Console.WriteLine("::::lock-slot|{1}|{0}", ready, player.Type);
             SendToAll(change);
         }
 
@@ -393,7 +393,7 @@ namespace YGOCore.Game
                 return;
             RemovePlayer(Players[pos]);
             if (Program.Config.STDOUT == true) 
-                Console.WriteLine("::::left-slot-{1}|{0}", player.Name, pos);
+                Console.WriteLine("::::left-slot|{1}|{0}", player.Name, pos);
         }
 
         public void StartDuel(Player player)
