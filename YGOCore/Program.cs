@@ -1,86 +1,83 @@
 using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Collections.Generic;
-using YGOCore.Game;
-using OcgWrapper;
-using YGOCore.Game.Enums;
+using System.Threading;
+using System.IO;
+using System.Diagnostics;
 
 namespace YGOCore
 {
-    public class Server
+    class Program
     {
-        public bool IsListening { get; private set; }
-        private TcpListener m_listener;
-        private List<GameClient> m_clients;
-        Player announcer;
-                
+        const string Version = "0.2 Beta";
 
-        public Server()
+        public static ServerConfig Config { get; private set; }
+        public static Random Random;
+
+
+        static void Main(string[] args)
         {
-            m_clients = new List<GameClient>();
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
+            Config = new ServerConfig();
+            bool loaded = args.Length > 1 ? Config.Load(args[1]) : Config.Load();
+
+
+            if (Config.SplashScreen == true)
+            {
+
+                Logger.WriteLine(" __     _______  ____   _____", false);
+                Logger.WriteLine(" \\ \\   / / ____|/ __ \\ / ____|", false);
+                Logger.WriteLine("  \\ \\_/ / |  __| |  | | |     ___  _ __ ___", false);
+                Logger.WriteLine("   \\   /| | |_ | |  | | |    / _ \\| '__/ _ \\", false);
+                Logger.WriteLine("    | | | |__| | |__| | |___| (_) | | |  __/", false);
+                Logger.WriteLine("    |_|  \\_____|\\____/ \\_____\\___/|_|  \\___|               Version: " + Version, false);
+                Logger.WriteLine(string.Empty, false);
+
+            }
+            Logger.WriteLine("Accepting client version 0x" + Config.ClientVersion.ToString("x") + " or higher.");
+
+
+            if (loaded)
+                Console.WriteLine("Config loaded.");
+            else
+                Console.WriteLine("Unable to load config.txt, using default settings.");
+
+
+            int coreport = 0;
+
+            if (args.Length > 0)
+                int.TryParse(args[0], out coreport);
+
+            Random = new Random();
+
+            Server server = new Server();
+            if (!server.Start(coreport))
+                Thread.Sleep(5000);
+
+            if (server.IsListening == true && Config.STDOUT == true)
+               Console.WriteLine("::::network-ready");
+
+            
+            while (server.IsListening)
+            {
+                server.Process();
+                Thread.Sleep(1);
+
+
+            }
+            if (Config.STDOUT == true)
+            Console.WriteLine("::::network-end");
+
+            Process.GetCurrentProcess().Kill();
+
         }
 
-        public bool Start(int port = 0)
+        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            try
-            {
-                Api.Init(Program.Config.Path, Program.Config.ScriptFolder, Program.Config.CardCDB);
-                BanlistManager.Init(Program.Config.BanlistFile);
-                m_listener = new TcpListener(IPAddress.Any, port == 0 ? Program.Config.ServerPort : port);
-                m_listener.Start();
-                IsListening = true;
-            }
-            catch (SocketException)
-            {
-                Logger.WriteError("The " + (port == 0 ? Program.Config.ServerPort : port) + " port is currently in use.");
-                return false;
-            }
-            catch (Exception e)
-            {
-                Logger.WriteError(e);
-                return false;
-            }
+            Exception exception = e.ExceptionObject as Exception ?? new Exception();
 
-            Logger.WriteLine("Listening on port " + (port == 0 ? Program.Config.ServerPort : port));
-            return true;
+            File.WriteAllText("crash_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", exception.ToString());
+
+            Process.GetCurrentProcess().Kill();
         }
-
-        public void Stop()
-        {
-            if (IsListening)
-            {
-                m_listener.Stop();
-                IsListening = false;
-
-                foreach (GameClient client in m_clients)
-                    client.Close();
-            }
-        }
-
-        public void Process()
-        {
-            GameManager.HandleRooms();
-
-            while (IsListening && m_listener.Pending())
-            {
-                m_clients.Add(new GameClient(m_listener.AcceptTcpClient()));
-            }
-            List<GameClient> toRemove = new List<GameClient>();
-
-            foreach (GameClient client in m_clients)
-            {
-                client.Tick();
-                if (!client.IsConnected || client.InGame())
-                    toRemove.Add(client);
-            }
-
-            while (toRemove.Count > 0)
-            {
-                m_clients.Remove(toRemove[0]);
-                toRemove.RemoveAt(0);
-            }
-        }
-
     }
 }
