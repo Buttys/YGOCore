@@ -11,14 +11,14 @@ namespace YGOCore
 
         public static ServerConfig Config { get; private set; }
         public static Random Random;
-        
-        
+
+
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
             Config = new ServerConfig();
-            bool loaded = args.Length > 1 ? Config.Load(args[1]): Config.Load();
+            bool loaded = args.Length > 1 ? Config.Load(args[1]) : Config.Load();
 
 
             if (Config.SplashScreen == true)
@@ -48,24 +48,25 @@ namespace YGOCore
                 int.TryParse(args[0], out coreport);
 
             Random = new Random();
-            
+
             Server server = new Server();
             if (!server.Start(coreport))
                 Thread.Sleep(5000);
 
-            if (server.IsListening == true && Config.Ready == true)
-            {
-                Logger.WriteLine("::::network-ready");
+            if (server.IsListening == true && Config.STDOUT == true)
+               Console.WriteLine("::::network-ready");
 
-            }
+            
             while (server.IsListening)
             {
                 server.Process();
                 Thread.Sleep(1);
-          
-                
+
+
             }
-            Logger.WriteLine("::::network-end");
+            if (Config.STDOUT == true)
+            Console.WriteLine("::::network-end");
+
             Process.GetCurrentProcess().Kill();
 
         }

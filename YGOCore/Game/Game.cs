@@ -1,4 +1,4 @@
-    using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using OcgWrapper;
@@ -102,7 +102,7 @@ namespace YGOCore.Game
 
         public void SendToAllBut(GameServerPacket packet, int except)
         {
-            if(except < CurPlayers.Length)
+            if (except < CurPlayers.Length)
                 SendToAllBut(packet, CurPlayers[except]);
             else
                 SendToAll(packet);
@@ -148,7 +148,7 @@ namespace YGOCore.Game
                 player.SendTypeChange();
                 player.Send(new GameServerPacket(StocMessage.DuelStart));
                 Observers.Add(player);
-               
+
 
                 if (State == GameState.Duel)
                     InitNewSpectator(player);
@@ -170,20 +170,19 @@ namespace YGOCore.Game
                 IsReady[pos] = false;
                 player.Type = pos;
 
-                if (Program.Config.UserInfoConnected == true)
+                if (Program.Config.STDOUT == true)
                     Console.WriteLine("::::join-slot-{1}|{0}", player.Name, pos);
             }
             else
             {
                 GameServerPacket watch = new GameServerPacket(StocMessage.HsWatchChange);
                 watch.Write((short)(Observers.Count + 1));
+                if (Program.Config.STDOUT == true)
                 Console.WriteLine("::::spectator|{0}", Observers.Count);
                 SendToAll(watch);
 
                 player.Type = (int)PlayerType.Observer;
                 Observers.Add(player);
-                if (Program.Config.UserInfoConnected == true)
-                    Console.WriteLine("::::spectator|{0}", player.Name);
                
             }
 
@@ -213,6 +212,7 @@ namespace YGOCore.Game
                 GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
                 nwatch.Write((short)Observers.Count);
                 player.Send(nwatch);
+                if (Program.Config.STDOUT == true)
                 Console.WriteLine("::::spectator|{0}", Observers.Count);
             }
         }
@@ -227,12 +227,13 @@ namespace YGOCore.Game
                 if (State == GameState.Lobby)
                 {
                     GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
-                    nwatch.Write((short) Observers.Count);
+                    nwatch.Write((short)Observers.Count);
                     SendToAll(nwatch);
+                    if (Program.Config.STDOUT == true)
                     Console.WriteLine("::::spectator|{0}", Observers.Count);
                 }
-                if (Program.Config.UserInfoConnected == true)
-                    Console.WriteLine("{0} - disconnected", player.Name);
+             //   if (Program.Config.STDOUT == true)        
+             //       Console.WriteLine("{0} - disconnected", player.Name); //Need API
                 player.Disconnect();
             }
             else if (State == GameState.Lobby)
@@ -241,8 +242,10 @@ namespace YGOCore.Game
                 IsReady[player.Type] = false;
 
                 GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
-                change.Write((byte)((player.Type << 4) + (int) PlayerChange.Leave));
+                change.Write((byte)((player.Type << 4) + (int)PlayerChange.Leave));
+                if (Program.Config.STDOUT == true)
                 Console.WriteLine("::::left-slot-{1}|{0}", player.Name, player.Type);
+
                 SendToAll(change);
                 player.Disconnect();
             }
@@ -288,6 +291,7 @@ namespace YGOCore.Game
 
                 GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
                 nwatch.Write((short)Observers.Count);
+                if (Program.Config.STDOUT == true)
                 Console.WriteLine("::::spectator|{0}", Observers.Count);
                 SendToAll(nwatch);
 
@@ -313,7 +317,7 @@ namespace YGOCore.Game
 
             player.Type = (int)PlayerType.Observer;
             player.SendTypeChange();
-            if (Program.Config.UserInfoSlot == true)
+            if (Program.Config.STDOUT == true)
                 Console.WriteLine("::::spectator|{0}", Observers.Count);
         }
 
@@ -323,7 +327,7 @@ namespace YGOCore.Game
             packet.Write((short)player.Type);
             packet.Write(msg, msg.Length + 1);
             SendToAllBut(packet, player);
-            if (Program.Config.DisplayChat == true)
+            if (Program.Config.STDOUT == true) 
                 Console.WriteLine("::::chat|{0}|{1}", player.Name, msg);
         }
 
@@ -334,8 +338,8 @@ namespace YGOCore.Game
             packet.Write((short)PlayerType.Yellow);
             packet.Write(finalmsg, finalmsg.Length + 1);
             SendToAll(packet);
-            if (Program.Config.DisplayChat == true)
-                Console.WriteLine("::::chat|[Server]|{0}",  msg);
+            if (Program.Config.STDOUT == true) 
+                Console.WriteLine("::::chat|[Server]|{0}", msg);
         }
 
         public void SetReady(Player player, bool ready)
@@ -373,10 +377,11 @@ namespace YGOCore.Game
             }
 
             IsReady[player.Type] = ready;
-            
+
             GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
             change.Write((byte)((player.Type << 4) + (int)(ready ? PlayerChange.Ready : PlayerChange.NotReady)));
-            Console.WriteLine("::::lock-slot-{1}|{0}",ready,player.Type);
+            if (Program.Config.STDOUT == true)
+            Console.WriteLine("::::lock-slot-{1}|{0}", ready, player.Type);
             SendToAll(change);
         }
 
@@ -387,8 +392,8 @@ namespace YGOCore.Game
             if (pos >= Players.Length || !player.Equals(HostPlayer) || player.Equals(Players[pos]) || Players[pos] == null)
                 return;
             RemovePlayer(Players[pos]);
-            if (Program.Config.UserInfoLocked == true)
-                Console.WriteLine("::::left-slot-{1}|{0}", player.Name,pos);
+            if (Program.Config.STDOUT == true) 
+                Console.WriteLine("::::left-slot-{1}|{0}", player.Name, pos);
         }
 
         public void StartDuel(Player player)
@@ -406,7 +411,7 @@ namespace YGOCore.Game
             }
 
             State = GameState.Hand;
-            if (Program.Config.UserInfoGameStart == true)
+            if (Program.Config.STDOUT == true) 
                 Console.WriteLine("::::startduel");
 
             SendToAll(new GameServerPacket(StocMessage.DuelStart));
@@ -607,14 +612,14 @@ namespace YGOCore.Game
 
         public void Surrender(Player player, int reason, bool force = false)
         {
-            if(!force)
+            if (!force)
                 if (State != GameState.Duel)
                     return;
             if (player.Type == (int)PlayerType.Observer)
                 return;
             GameServerPacket win = new GameServerPacket(GameMessage.Win);
-            if (Program.Config.UserInfoGameEnd == true)
-                Console.WriteLine("Surrender - {0}", player.Name);
+         //   if (Program.Config.STDOUT == true)
+         //       Console.WriteLine("Surrender - {0}", player.Name);  //Need API
 
             int team = player.Type;
             if (IsTag)
@@ -633,7 +638,8 @@ namespace YGOCore.Game
         public void RecordWin(int team, int reason, bool force = false)
         {
             //Record user win here
-            Console.WriteLine("::::endduel|{0}|{1}",  team,  reason, force);
+            if (Program.Config.STDOUT == true)
+            Console.WriteLine("::::endduel|{0}|{1}", team, reason);
         }
 
         public void RefreshAll()
@@ -925,7 +931,7 @@ namespace YGOCore.Game
         }
 
         private int m_lasttick;
-        public void  TimeTick()
+        public void TimeTick()
         {
             if (State == GameState.Duel)
             {
@@ -963,7 +969,7 @@ namespace YGOCore.Game
             if (State == GameState.Side)
             {
                 TimeSpan elapsed = DateTime.UtcNow - SideTimer;
-                int currentTick = (int) (120 - elapsed.TotalSeconds);
+                int currentTick = (int)(120 - elapsed.TotalSeconds);
                 if (currentTick == 60 || currentTick == 30 || currentTick == 10 || currentTick < 6)
                 {
                     if (m_lasttick != currentTick)
@@ -982,7 +988,7 @@ namespace YGOCore.Game
                         return;
                     }
 
-                    Surrender(!IsReady[0] ? Players[0]:Players[1],3,true);
+                    Surrender(!IsReady[0] ? Players[0] : Players[1], 3, true);
                     State = GameState.End;
                     End();
                 }
@@ -1014,7 +1020,7 @@ namespace YGOCore.Game
 
                 }
             }
-            if (State==GameState.Hand)
+            if (State == GameState.Hand)
             {
                 TimeSpan elapsed = DateTime.UtcNow - RPSTimer;
                 int currentTick = (60 - elapsed.Seconds);
@@ -1030,7 +1036,7 @@ namespace YGOCore.Game
 
                 if ((int)elapsed.TotalMilliseconds >= 60000)
                 {
-                    if (m_handResult[0]!= 0)
+                    if (m_handResult[0] != 0)
                         Surrender(Players[1], 3, true);
                     else if (m_handResult[1] != 0)
                         Surrender(Players[0], 3, true);
@@ -1085,7 +1091,7 @@ namespace YGOCore.Game
             for (int i = 0; i < m_duelCount; i++)
                 wins[m_matchResult[i]]++;
 
-            bool draw = wins[0]==wins[1];
+            bool draw = wins[0] == wins[1];
 
             if (draw)
                 return 2;
@@ -1211,7 +1217,7 @@ namespace YGOCore.Game
             for (int i = 0; i < hand1; i++)
                 draw.Write(0);
             player.Send(draw);
-            
+
             draw = new GameServerPacket(GameMessage.Draw);
             draw.Write((byte)1);
             draw.Write((byte)hand2);
@@ -1360,9 +1366,9 @@ namespace YGOCore.Game
         private static IList<int> ShuffleCards(Random rand, IEnumerable<int> cards)
         {
             List<int> shuffled = new List<int>(cards);
-            for (int i = shuffled.Count-1 ; i > 0; --i)
+            for (int i = shuffled.Count - 1; i > 0; --i)
             {
-                int pos = rand.Next(i+1);
+                int pos = rand.Next(i + 1);
                 int tmp = shuffled[i];
                 shuffled[i] = shuffled[pos];
                 shuffled[pos] = tmp;
@@ -1372,7 +1378,7 @@ namespace YGOCore.Game
 
         public void BonusTime(GameMessage message)
         {
-            switch(message)
+            switch (message)
             {
                 case GameMessage.Summoning:
                 case GameMessage.SpSummoning:
