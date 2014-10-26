@@ -21,15 +21,9 @@ A sample client to work with the server can be found here: https://github.com/Bu
 
 In order to run the server you will require the card scripts, database and the banlist, check the following file/folder structure for a better understanding:
 
-* scripts/
-* YGOCore.exe
-* cards.cdb
-* lflist.conf
-* OcgWrapper.dll
-* System.Data.SQLite.dll
-* ocgcore.dll
+![alt text](https://github.com/salvationdevelopment/ygocore/filestructure.png "File Structure")
 
-In order for users to connect to the server you will need to port forward the relevant port, in this case 8911 is used by default.
+In order for users to connect to the server you will need to port forward the relevant port, in this case `8911` is used by default.
 
 The server is designed in such a way that when new card effects and rulings are added to the game just recompiling ocgcore.dll from https://github.com/Fluorohydride/ygopro will continue keep the server compatible with all YGOPro clients.
 
@@ -37,15 +31,16 @@ you can download a precompiled version of ocgcore from the release section https
 but this version might not be the latest version avliable.
 
 ##Configuration##
-`ygoserver.exe` takes two parameters, a port, and a `*.INI` format configuration file with these configurations. Without parameters YGOCore will look for the above file structure after tying to load config.txt
+`ygoserver.exe` takes two parameters, a port, and a `*.INI` format configuration file with these configurations. Without parameters YGOCore will look for the above file structure after tying to load config.txt. For example `c:\ygocore\ygoserver.exe 9101 alternative-configuration.ini`. Will start the server on port 9101 ignoring the configuration files `serverport` and load `alternative-configuration.ini` and not `config.txt`.
 
 * `serverport` what server port to listen on, default `8911`
 * `path` default realitive path, default '.'.
 * `scriptfolder` path to the script folder default `script'.
 * `cardcdb` path to the card database default `cards.cdb`.
 * `banlist` path to the banlist file default `lflist.conf`.
-* `consolelog` enable console logging
-* `handshuffle` enable disable hand shuffling, do not sue with out the Buttys/ygopro `ocgcore.dll`
+* `errorlog` enable logging to file on fatal error, default true
+* `consolelog` enable console logging, default true
+* `handshuffle` enable disable hand shuffling, do not use with out the Buttys/ygopro `ocgcore.dll` and not Fluorohydride/ygopro
 * `autoendturn` enable auto ending the turn of players that run over time.
 * `clientversion` set the version of the core is expecting
 * `splashscreen` enable disable the startup art, default enabled. Requires `consolelog`
