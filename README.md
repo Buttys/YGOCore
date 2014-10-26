@@ -21,7 +21,7 @@ A sample client to work with the server can be found here: https://github.com/Bu
 
 In order to run the server you will require the card scripts, database and the banlist, check the following file/folder structure for a better understanding:
 
-![alt text](https://github.com/salvationdevelopment/ygocore/filestructure.png "File Structure")
+![alt text](https://raw.githubusercontent.com/SalvationDevelopment/YGOCore/master/filestructure.png "File Structure")
 
 In order for users to connect to the server you will need to port forward the relevant port, in this case `8911` is used by default.
 
