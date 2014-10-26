@@ -95,15 +95,9 @@ namespace YGOCore
 							case "splashscreen":
                                 SplashScreen = Convert.ToBoolean(value);
                                 break;
-							case "ready":
-                                Ready   = Convert.ToBoolean(value);
-                                break;
 							case "stdoutsupport":
                                 STDOUT = Convert.ToBoolean(value);
-                                break;
-                      
-
-                                
+                                break;    
                         }
                     }
                 }
