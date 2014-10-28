@@ -59,9 +59,15 @@ namespace YGOCore.Game
                     OnPlayerInfo(packet);
                     break;
 				case CtosMessage.JoinGame:
-					onJoinMyCardStyleGame (packet);
-                    //OnJoinGame(packet);
-                    break;
+					if (Program.Config.MyCard)
+					{
+						onJoinMyCardStyleGame(packet);
+					}
+					else
+					{
+						OnJoinGame(packet);
+					}
+					break;
 				case CtosMessage.CreateGame:
                     OnCreateGame(packet);
                     break;
