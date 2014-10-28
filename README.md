@@ -57,10 +57,14 @@ By default these commands are off. Requires `stdoutsupport = true` in the config
 ##Request Strings##
 When YGOCore recieves a game request command from a connecting client it will parse and handle the request in one of 3 ways. First it will see if a game using that sting is currently active and then conncect the requesting client to that game. If not it will parse the request
 
-###Percy/FH/TDOANE Notation###
-`nnOOOnnnn,n,n,xxxxx`
+**Percy/FH/TDOANE Notation**
 
-###DevPro Notation###
-`nnOOOnnnn,n,n,nN,xxxxx`
+0-2 0-2 O/T O/T O/T Lifepoints, Initial Draw Count, Draws per turn, Password
+`nnOOOnnnn,n,n,n,xxxxx`
 
-###'MyCard #M/F Notation### 
+**DevPro Notation**
+
+0-2 0-2 O/T O/T O/T Lifepoints, Initial Draw Count, Draws per turn, Ranked/Unranked [Locked], Password
+`nnOOOnnnn,n,n,,n,nN,xxxxx`
+
+**M/F Notation**
