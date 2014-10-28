@@ -53,3 +53,14 @@ The ygocore and the management software communicate via standard streams or TCP 
 * `::::chat|PlayerName|msg` PlayerName sent a message containing the text of `msg`. If the server speaks PlayerName is `[Server]`.
 
 By default these commands are off. Requires `stdoutsupport = true` in the config.txt be set to true. For more information see [the wikipedia article about it](http://en.wikipedia.org/wiki/Standard_streams).
+
+##Request Strings##
+When YGOCore recieves a game request command from a connecting client it will parse and handle the request in one of 3 ways. First it will see if a game using that sting is currently active and then conncect the requesting client to that game. If not it will parse the request
+
+###Percy/FH/TDOANE Notation###
+`nnOOOnnnn,n,n,xxxxx`
+
+###DevPro Notation###
+`nnOOOnnnn,n,n,nN,xxxxx`
+
+###'MyCard #M/F Notation### 
