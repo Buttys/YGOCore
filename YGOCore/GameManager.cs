@@ -10,7 +10,7 @@ namespace YGOCore
 
         static Dictionary<string, GameRoom> m_rooms = new Dictionary<string,GameRoom>();
 
-        public static GameRoom CreateOrGetGame(GameConfig config)
+        public static GameRoom CreateOrGetGame(IGameConfig config)
         {
             if (m_rooms.ContainsKey(config.Name))
                 return m_rooms[config.Name];
@@ -63,7 +63,7 @@ namespace YGOCore
             return filteredRooms[Program.Random.Next(0, filteredRooms.Count)];
         }
 
-        private static GameRoom CreateRoom(GameConfig config)
+        private static GameRoom CreateRoom(IGameConfig config)
         {
             GameRoom room = new GameRoom(config);
             m_rooms.Add(config.Name, room);

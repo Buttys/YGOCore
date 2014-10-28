@@ -58,10 +58,17 @@ namespace YGOCore.Game
                 case CtosMessage.PlayerInfo:
                     OnPlayerInfo(packet);
                     break;
-                case CtosMessage.JoinGame:
-                    OnJoinGame(packet);
-                    break;
-                case CtosMessage.CreateGame:
+				case CtosMessage.JoinGame:
+					if (Program.Config.MyCard)
+					{
+						onJoinMyCardStyleGame(packet);
+					}
+					else
+					{
+						OnJoinGame(packet);
+					}
+					break;
+				case CtosMessage.CreateGame:
                     OnCreateGame(packet);
                     break;
             }
@@ -141,6 +148,47 @@ namespace YGOCore.Game
             IsAuthentified = true;
             
         }
+
+		private void onJoinMyCardStyleGame(GameClientPacket packet)
+		{
+			if (string.IsNullOrEmpty(Name) || Type != (int)PlayerType.Undefined)
+				return;
+			int version = packet.ReadInt16();
+			if (version < Program.Config.ClientVersion)
+			{
+				LobbyError("Version too low");
+				return;
+			}
+			else if (version > Program.Config.ClientVersion)
+				ServerMessage("Warning: client version is higher than servers.");
+			packet.ReadInt32();//gameid
+			packet.ReadInt16();
+
+			string joinCommand = packet.ReadUnicode(60);
+
+			GameRoom room = null;
+
+			if (GameManager.GameExists(joinCommand))
+				room = GameManager.GetGame(joinCommand);
+			else
+				room = GameManager.CreateOrGetGame(new MyCardStyleGameConfig(joinCommand));
+
+			if (room == null)
+			{
+				LobbyError("Server Full");
+				return;
+			}
+			if (!room.IsOpen)
+			{
+				LobbyError("Game Finished");
+				return;
+			}
+
+			Game = room.Game;
+			Game.AddPlayer(this);
+			IsAuthentified = true;
+
+		}
 
         private void OnJoinGame(GameClientPacket packet)
         {

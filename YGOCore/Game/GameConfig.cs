@@ -2,19 +2,19 @@
 
 namespace YGOCore.Game
 {
-    public class GameConfig
+    public class GameConfig : IGameConfig
     {
-        public int LfList { get; private set; }
-        public int Rule { get; private set; }
-        public int Mode { get; private set; }
-        public bool EnablePriority { get; private set; }
-        public bool NoCheckDeck { get; private set; }
-        public bool NoShuffleDeck { get; private set; }
-        public int StartLp { get; private set; }
-        public int StartHand { get; private set; }
-        public int DrawCount { get; private set; }
-        public int GameTimer { get; private set; }
-        public string Name { get; private set; }
+        public int LfList { get; set; }
+        public int Rule { get; set; }
+        public int Mode { get; set; }
+        public bool EnablePriority { get; set; }
+        public bool NoCheckDeck { get; set; }
+        public bool NoShuffleDeck { get; set; }
+        public int StartLp { get; set; }
+        public int StartHand { get; set; }
+        public int DrawCount { get; set; }
+        public int GameTimer { get; set; }
+        public string Name { get; set; }
 
         public GameConfig(string info)
         {

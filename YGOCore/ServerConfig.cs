@@ -15,9 +15,10 @@ namespace YGOCore
         public bool HandShuffle { get; private set; }
         public bool AutoEndTurn { get; private set; }
         public int ClientVersion { get; private set; }
-	public bool SplashScreen { get; private set; }
-	public bool Ready { get; private set; }
+	    public bool SplashScreen { get; private set; }
+	    public bool Ready { get; private set; }
         public bool STDOUT { get; private set; }
+        public bool MyCard { get; private set; }
 
 
 			 
@@ -37,7 +38,8 @@ namespace YGOCore
             AutoEndTurn = true;
 			SplashScreen = true;
 			Ready = false;
-            STDOUT = false;	
+            STDOUT = false;
+            MyCard = false;	
         }
 
         public bool Load(string file = "config.txt")
@@ -97,7 +99,10 @@ namespace YGOCore
                                 break;
 							case "stdoutsupport":
                                 STDOUT = Convert.ToBoolean(value);
-                                break;    
+                                break;
+                            case "mycardnotation":
+                                MyCard = Convert.ToBoolean(value);
+                                break;
                         }
                     }
                 }
