@@ -10,7 +10,7 @@ namespace YGOCore.Game
 {
     public class Game
     {
-        public GameConfig Config { get; private set; }
+        public IGameConfig Config { get; private set; }
         public Banlist Banlist { get; private set; }
         public bool IsMatch { get; private set; }
         public bool IsTag { get; private set; }
