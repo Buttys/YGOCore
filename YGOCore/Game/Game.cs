@@ -48,7 +48,7 @@ namespace YGOCore.Game
         private bool m_matchKill;
         private bool m_swapped;
 
-        public Game(GameRoom room, GameConfig config)
+        public Game(GameRoom room, IGameConfig config)
         {
             Config = config;
             State = GameState.Lobby;
@@ -306,7 +306,7 @@ namespace YGOCore.Game
             if (Program.Config.STDOUT == true)
                 Console.WriteLine("::::join-slot|{2}|{1}|{0}", player.Name, pos, Config.Name);
             if (Program.Config.STDOUT == true)
-                Console.WriteLine("::::spectator|{2}|{0}", Observers.Count, Config.Name);
+                Console.WriteLine("::::spectator|{1}|{0}", Observers.Count, Config.Name);
         }
 
         public void MoveToObserver(Player player)
@@ -330,7 +330,7 @@ namespace YGOCore.Game
             player.Type = (int)PlayerType.Observer;
             player.SendTypeChange();
             if (Program.Config.STDOUT == true)
-                Console.WriteLine("::::spectator|{2}|{0}", Observers.Count, Config.Name);
+                Console.WriteLine("::::spectator|{1}|{0}", Observers.Count, Config.Name);
         }
 
         public void Chat(Player player, string msg)
