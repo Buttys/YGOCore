@@ -67,8 +67,6 @@ namespace YGOCore
             if (Config.STDOUT == true)
             Console.WriteLine("::::network-end");
 
-            Process.GetCurrentProcess().Kill();
-
         }
 
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
