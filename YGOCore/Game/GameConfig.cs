@@ -80,7 +80,7 @@ namespace YGOCore.Game
                 StartHand = int.Parse(list[2]);
                 DrawCount = int.Parse(list[3]);
 
-                Name = list[4];
+                Name = gameinfo;
             }
             catch (Exception)
             {
