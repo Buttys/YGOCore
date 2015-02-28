@@ -38,6 +38,10 @@ The server is designed in such a way that when new card effects and rulings are 
 * `clientversion` set the version of the core is expecting
 * `splashscreen` enable disable the startup art, default enabled. Requires `consolelog`
 * `stdoutsupport` enable additional standard streams API support for [MyCard](https://github.com/mycard/ygopro-web) and [SalvationDevelopment](https://github.com/SalvationDevelopment/YGOPro-Support-System), and new programmers that do not wish to develop against YGOPro's TCP network protocols.
+* `recycle` disable the recycle feature, by default the server keeps running until exit by external means. When set to `false` server will exit with code 0 after one game.
+* `maxdecksize` Maximum number of cards in a deck default 60. Used for legacy formats.
+* `mindecksize` Minimum number of cards in a deck default 40. Used for draft formats.
+* `maxextradecksize` Maximum number of cards in the extra deck default 15. Used for legacy and anime formats.
 
 ##Standard Streams API##
 The ygocore and the management software communicate via standard streams or TCP network. The core signals the management software its current state via a specific API, standard out stream comes via the console/terminal, these signals should not be confused with debug messages. Each call starts with `::::` to check for if you are programming against it, this is an indication of a standard stream API call and not a debug message.

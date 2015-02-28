@@ -44,13 +44,13 @@ namespace YGOCore
 			Ready = false;
             STDOUT = false;
             MyCard = false;
-            Recycle = false;
+            Recycle = true;
             MainCountMax = 60;
             MainCountMin = 40;
             ExtraCount = 15;
         }
 
-        public bool Load(string file = "config.txt")
+        public bool Load(string file = "config.ini")
         {
             if (File.Exists(file))
             {
