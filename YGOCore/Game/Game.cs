@@ -640,7 +640,7 @@ namespace YGOCore.Game
             win.Write((byte)reason);
             SendToAll(win);
 
-            MatchSaveResult(1 - team);
+            //MatchSaveResult(1 - team);
 
             RecordWin(1 - team, reason, force);
 

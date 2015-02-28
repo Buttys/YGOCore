@@ -65,8 +65,9 @@ namespace YGOCore
 
             }
             if (Config.STDOUT == true)
-            Console.WriteLine("::::network-end");
-            System.Environment.Exit(0);
+                Console.WriteLine("::::network-end");
+            if (Config.Recycle == false)
+                System.Environment.Exit(0);
 
         }
 

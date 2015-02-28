@@ -19,6 +19,10 @@ namespace YGOCore
 	    public bool Ready { get; private set; }
         public bool STDOUT { get; private set; }
         public bool MyCard { get; private set; }
+        public bool Recycle { get; private set; }
+        public int MainCountMax { get; private set; }
+        public int MainCountMin { get; private set; }
+        public int ExtraCount { get; private set; }
 
 
 			 
@@ -39,7 +43,11 @@ namespace YGOCore
 			SplashScreen = true;
 			Ready = false;
             STDOUT = false;
-            MyCard = false;	
+            MyCard = false;
+            Recycle = false;
+            MainCountMax = 60;
+            MainCountMin = 40;
+            ExtraCount = 15;
         }
 
         public bool Load(string file = "config.txt")
@@ -102,6 +110,18 @@ namespace YGOCore
                                 break;
                             case "mycardnotation":
                                 MyCard = Convert.ToBoolean(value);
+                                break;
+                            case "recycle":
+                                Recycle = Convert.ToBoolean(value);
+                                break;
+                            case "maxdecksize":
+                                MainCountMax = Convert.ToInt32(value);
+                                break;
+                            case "mindecksize":
+                                MainCountMin = Convert.ToInt32(value);
+                                break;
+                            case "maxextradecksize":
+                                ExtraCount = Convert.ToInt32(value);
                                 break;
                         }
                     }

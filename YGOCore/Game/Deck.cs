@@ -9,6 +9,7 @@ namespace YGOCore.Game
         public IList<int> Main { get; private set; }
         public IList<int> Extra { get; private set; }
         public IList<int> Side { get; private set; }
+        public static ServerConfig Config { get; private set; }
 
         public Deck()
         {
@@ -26,12 +27,12 @@ namespace YGOCore.Game
                 return;
             if ((card.Data.Type & 0x802040) != 0)
             {
-                if (Extra.Count < 15)
+                if (Extra.Count < Config.ExtraCount)
                     Extra.Add(cardId);
             }
             else
             {
-                if (Main.Count < 60)
+                if (Main.Count < Config.MainCountMax)
                     Main.Add(cardId);
             }
         }
@@ -48,8 +49,9 @@ namespace YGOCore.Game
         }
 
         public int Check(Banlist ban, bool ocg, bool tcg)
-        {
-            if (Main.Count < 40 || Main.Count > 60 || Extra.Count > 15 || Side.Count > 15)
+        {   
+
+            if (Main.Count < Config.MainCountMin || Main.Count > Config.MainCountMax || Extra.Count > Config.ExtraCount || Side.Count > 15)
                 return 1;
 
             IDictionary<int, int> cards = new Dictionary<int, int>();
