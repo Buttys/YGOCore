@@ -21,13 +21,13 @@ To run the server you will require the card scripts, database and the banlist, c
 
 In order for users out side your LAN to connect to the server you will need to port forward the relevant port, in this case port `8911` is used by default.
 
-The server is designed in such a way that when new card effects and rulings are added to the game just recompiling `ocgcore.dll` from [Fluorohydride/ygopro](https://github.com/Fluorohydride/ygopro) will continue keep the server compatible with all YGOPro clients. You can download a precompiled version of ocgcore from the [release section](https://github.com/Buttys/YGOCore/releases/) but this version might not be the latest version available, if possible always recompile. If you have handshuffling enabled you will need a `ocgcore.dll` from [Buttys/ygopro](https://github.com/Buttys/ygopro) after the relivant and latest changes have been merged down.
+The server is designed in such a way that when new card effects and rulings are added to the game just recompiling `ocgcore.dll` from [Fluorohydride/ygopro/ocgcore](https://github.com/Fluorohydride/ygopro) will continue keep the server compatible with all YGOPro clients. You can download a precompiled version of ocgcore from the [release section](https://github.com/Buttys/YGOCore/releases/) but this version might not be the latest version available, if possible always recompile. If you have handshuffling enabled you will need a `ocgcore.dll` from [Buttys/ygopro](https://github.com/Buttys/ygopro) after the relivant and latest changes have been merged down.
 
 ##Configuration##
-`ygoserver.exe` takes two parameters, a port, and a `*.ini` format configuration file with these configurations. Without parameters YGOCore will look for the above file structure after tying to load config.txt. For example `c:\ygocore\ygoserver.exe 9101 alternative-configuration.ini`. Will start the server on port `9101` ignoring the configuration files `serverport` and load `alternative-configuration.ini` and not `config.txt`.
+`ygoserver.exe` takes two parameters, a port, and a `*.ini` format configuration file with these configurations. Without parameters YGOCore will look for the above file structure after tying to load config.txt. For example `c:\ygocore\ygoserver.exe 9101 alternative-configuration.ini`. Will start the server on port `9101` ignoring the configuration files `serverport` and load `alternative-configuration.ini` and not `config.ini`.
 
 * `serverport` what server port to listen on, default `8911`
-* `path` default realitive path, default '.'.
+* `path` default relative path, default '.'.
 * `scriptfolder` path to the script folder default `script'.
 * `cardcdb` path to the card database default `cards.cdb`.
 * `banlist` path to the banlist file default `lflist.conf`.
@@ -48,7 +48,7 @@ The ygocore and the management software communicate via standard streams or TCP 
 
 * `::::network-ready` signal that the core has loaded and is listening on its given port
 * `::::network-end` signal that the game has ended,  ie kill core request.
-* `::::join-slot|roomname||#|PlayerName` PlayerName has joined the duel in slot #.
+* `::::join-slot|roomname|#|PlayerName` PlayerName has joined the duel in slot #.
 * `::::left-slot|roomname|#|PlayerName` PlayerName has left the duel in slot #.
 * `::::spectator|roomname|#` number of spectators where # is an integer.
 * `::::lock-slot|roomname|#|bool` slot #'s deck is locked in/out, and `bool` is True or `False`.
