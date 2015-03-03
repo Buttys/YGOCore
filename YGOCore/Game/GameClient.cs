@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using YGOCore;
 
 namespace YGOCore.Game
 {
@@ -32,6 +33,10 @@ namespace YGOCore.Game
 
         public void Close()
         {
+            if (YGOCore.Program.Config.STDOUT == true)
+                Console.WriteLine("::::network-end");
+            if (YGOCore.Program.Config.Recycle == false)
+                System.Environment.Exit(0);
             if (!IsConnected)
                 return;
             IsConnected = false;
