@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using OcgWrapper;
 using OcgWrapper.Enums;
+using YGOCore;
 
 namespace YGOCore.Game
 {
@@ -9,7 +10,6 @@ namespace YGOCore.Game
         public IList<int> Main { get; private set; }
         public IList<int> Extra { get; private set; }
         public IList<int> Side { get; private set; }
-        public static ServerConfig Config { get; private set; }
 
         public Deck()
         {
@@ -27,12 +27,12 @@ namespace YGOCore.Game
                 return;
             if ((card.Data.Type & 0x802040) != 0)
             {
-                if (Extra.Count < Config.ExtraCount)
+                if (Extra.Count < YGOCore.Program.Config.ExtraCount)
                     Extra.Add(cardId);
             }
             else
             {
-                if (Main.Count < Config.MainCountMax)
+                if (Main.Count < YGOCore.Program.Config.MainCountMax)
                     Main.Add(cardId);
             }
         }
@@ -49,9 +49,9 @@ namespace YGOCore.Game
         }
 
         public int Check(Banlist ban, bool ocg, bool tcg)
-        {   
+        {
 
-            if (Main.Count < Config.MainCountMin || Main.Count > Config.MainCountMax || Extra.Count > Config.ExtraCount || Side.Count > 15)
+            if (Main.Count < YGOCore.Program.Config.MainCountMin || Main.Count > YGOCore.Program.Config.MainCountMax || Extra.Count > YGOCore.Program.Config.ExtraCount || Side.Count > 15)
                 return 1;
 
             IDictionary<int, int> cards = new Dictionary<int, int>();

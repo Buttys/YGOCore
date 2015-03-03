@@ -61,9 +61,8 @@ namespace YGOCore
             {
                 server.Process();
                 Thread.Sleep(1);
-
-
             }
+
             if (Config.STDOUT == true)
                 Console.WriteLine("::::network-end");
             if (Config.Recycle == false)
