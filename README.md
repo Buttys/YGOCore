@@ -48,13 +48,13 @@ The ygocore and the management software communicate via standard streams or TCP 
 
 * `::::network-ready` signal that the core has loaded and is listening on its given port
 * `::::network-end` signal that the game has ended,  ie kill core request.
-* `::::join-slot|#|PlayerName` PlayerName has joined the duel in slot #.
-* `::::left-slot|#|PlayerName` PlayerName has left the duel in slot #.
-* `::::spectator|#` number of spectators where # is an integer.
-* `::::lock-slot|#|bool` slot #'s deck is locked in/out, and `bool` is True or `False`.
-* `::::startduel` RPS has started, this signals that the game has started.
-* `::::endduel|WinningPlayerSlot#|Reason` the winning player slot integer, and how they won.
-* `::::chat|PlayerName|msg` PlayerName sent a message containing the text of `msg`. If the server speaks PlayerName is `[Server]`.
+* `::::join-slot|roomname||#|PlayerName` PlayerName has joined the duel in slot #.
+* `::::left-slot|roomname|#|PlayerName` PlayerName has left the duel in slot #.
+* `::::spectator|roomname|#` number of spectators where # is an integer.
+* `::::lock-slot|roomname|#|bool` slot #'s deck is locked in/out, and `bool` is True or `False`.
+* `::::startduel|roomname` RPS has started, this signals that the game has started.
+* `::::endduel|roomname|WinningPlayerSlot#|Reason` the winning player slot integer, and how they won.
+* `::::chat|roomname|PlayerName|msg` PlayerName sent a message containing the text of `msg`. If the server speaks PlayerName is `[Server]`.
 
 By default these commands are off. Requires `stdoutsupport = true` in the config.txt be set to true. For more information see [the wikipedia article about it](http://en.wikipedia.org/wiki/Standard_streams).
 
