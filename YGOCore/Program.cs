@@ -39,7 +39,7 @@ namespace YGOCore
             if (loaded)
                 Console.WriteLine("Config loaded.");
             else
-                Console.WriteLine("Unable to load config.txt, using default settings.");
+                Console.WriteLine("Unable to load config.ini, using default settings.");
 
 
             int coreport = 0;
