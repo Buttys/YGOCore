@@ -33,16 +33,13 @@ namespace YGOCore.Game
 
         public void Close()
         {
-            if (YGOCore.Program.Config.STDOUT == true)
-                Console.WriteLine("::::network-end");
-            if (YGOCore.Program.Config.Recycle == false)
-                System.Environment.Exit(0);
             if (!IsConnected)
                 return;
             IsConnected = false;
             m_client.Close();
             if(InGame())
                 m_room.RemoveClient(this);
+
         }
 
         public bool InGame()
@@ -106,6 +103,10 @@ namespace YGOCore.Game
             {
                 Close();
                 Player.OnDisconnected();
+                if (YGOCore.Program.Config.STDOUT == true)
+                    Console.WriteLine("::::network-end");
+                if (YGOCore.Program.Config.Recycle == false)
+                    System.Environment.Exit(0);
             }
         }
 
