@@ -337,6 +337,8 @@ namespace YGOCore.Game
         {
             GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
             packet.Write((short)player.Type);
+            if (player.Type == (int)PlayerType.Observer)
+                msg = player.Name + ": " + msg;
             packet.Write(msg, msg.Length + 1);
             SendToAllBut(packet, player);
             if (Program.Config.STDOUT == true)
