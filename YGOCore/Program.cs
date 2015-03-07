@@ -75,7 +75,10 @@ namespace YGOCore
             Exception exception = e.ExceptionObject as Exception ?? new Exception();
 
             File.WriteAllText("crash_" + DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt", exception.ToString());
-
+            if (Config.STDOUT == true)
+                Console.WriteLine("::::network-end");
+            if (Config.Recycle == false)
+                System.Environment.Exit(0);
             Process.GetCurrentProcess().Kill();
         }
     }

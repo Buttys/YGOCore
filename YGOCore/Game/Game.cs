@@ -910,7 +910,9 @@ namespace YGOCore.Game
                 SendToObservers(new GameServerPacket(StocMessage.WaitingSide));
             }
             else
+            {
                 End();
+            }
         }
 
         public void End()

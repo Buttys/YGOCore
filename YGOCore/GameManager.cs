@@ -2,6 +2,7 @@
 using YGOCore.Game;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using YGOCore;
 
 namespace YGOCore
 {
@@ -86,6 +87,10 @@ namespace YGOCore
             {
                 m_rooms.Remove(room);
                 Logger.WriteLine("Game--");
+                if (YGOCore.Program.Config.STDOUT == true)
+                    Console.WriteLine("::::network-end");
+                if (YGOCore.Program.Config.Recycle == false)
+                    System.Environment.Exit(0);
             }
         }
 

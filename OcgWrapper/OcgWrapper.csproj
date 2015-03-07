@@ -42,7 +42,6 @@
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
-    <Reference Include="Mono.Data.Sqlite" Condition=" '$(OS)' == 'Unix' "/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api.cs" />
