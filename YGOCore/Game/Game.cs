@@ -642,7 +642,7 @@ namespace YGOCore.Game
             win.Write((byte)reason);
             SendToAll(win);
 
-            MatchSaveResult(1 - team);
+            //MatchSaveResult(1 - team);
 
             RecordWin(1 - team, reason, force);
 
@@ -1081,10 +1081,7 @@ namespace YGOCore.Game
                 m_startplayer = 1 - player;
             else
                 m_startplayer = 1 - m_startplayer;
-            if (m_duelCount >= 0 && m_duelCount <= 2)
-+            {
-+                m_matchResult[m_duelCount++] = player;
-+            }
+            m_matchResult[m_duelCount++] = player;
         }
 
         public void MatchKill()
