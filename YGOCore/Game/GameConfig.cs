@@ -29,7 +29,7 @@ namespace YGOCore.Game
                 StartLp = 8000;
                 StartHand = 5;
                 DrawCount = 1;
-                GameTimer = 120;
+                GameTimer = 180;
                 Name = GameManager.RandomRoomName();
             }
             else
@@ -65,7 +65,7 @@ namespace YGOCore.Game
 
                 Rule = int.Parse(rules[0].ToString());
                 Mode = int.Parse(rules[1].ToString());
-                GameTimer = int.Parse(rules[2].ToString()) == 0 ? 120 : 60;
+                GameTimer = int.Parse(rules[2].ToString()) == 0 ? 180 : 300;
                 EnablePriority = rules[3] == 'T' || rules[3] == '1';
                 NoCheckDeck = rules[4] == 'T' || rules[4] == '1';
                 NoShuffleDeck = rules[5] == 'T' || rules[5] == '1';
@@ -93,7 +93,7 @@ namespace YGOCore.Game
                 StartLp = 8000;
                 StartHand = 5;
                 DrawCount = 1;
-                GameTimer = 120;
+                GameTimer = 180;
                 Name = GameManager.RandomRoomName();
                 return;
             }
