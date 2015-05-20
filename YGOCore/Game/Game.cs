@@ -62,7 +62,7 @@ namespace YGOCore.Game
             m_handResult = new int[2];
             m_timelimit = new int[2];
             m_bonustime = new int[2];
-            m_matchResult = new int[3];
+            m_matchResult = new int[6];
             Observers = new List<Player>();
             if (config.LfList >= 0 && config.LfList < BanlistManager.Banlists.Count)
                 Banlist = BanlistManager.Banlists[config.LfList];
