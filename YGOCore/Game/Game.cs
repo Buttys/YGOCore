@@ -26,6 +26,8 @@ namespace YGOCore.Game
 
         public Player[] Players { get; private set; }
         public Player[] CurPlayers { get; private set; }
+        public DateTime[] WaitTimers { get; private set; }
+        public bool[] IsWaiting { get; private set; }
         public bool[] IsReady { get; private set; }
         public List<Player> Observers { get; private set; }
         public Player HostPlayer { get; private set; }
@@ -58,6 +60,8 @@ namespace YGOCore.Game
             LifePoints = new int[2];
             Players = new Player[IsTag ? 4 : 2];
             CurPlayers = new Player[2];
+            WaitTimers = new DateTime[IsTag ? 4 : 2];
+            IsWaiting = new bool[IsTag ? 4 : 2];
             IsReady = new bool[IsTag ? 4 : 2];
             m_handResult = new int[2];
             m_timelimit = new int[2];
@@ -190,6 +194,11 @@ namespace YGOCore.Game
                
             }
 
+            if (player.Type != (int)PlayerType.Observer) {
+                WaitTimers[player.Type] = DateTime.UtcNow;
+                IsWaiting[player.Type] = false;
+            }
+
             SendJoinGame(player);
             player.SendTypeChange();
 
@@ -223,8 +232,20 @@ namespace YGOCore.Game
 
         public void RemovePlayer(Player player)
         {
-            if (player.Equals(HostPlayer) && State == GameState.Lobby)
-                m_room.Close();
+            if (player.Equals(HostPlayer) && State == GameState.Lobby) {
+                // m_room.Close(); // change logic
+                Players[player.Type] = null;
+                IsReady[player.Type] = false;
+                HostPlayer = null;
+
+                GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
+                change.Write((byte)((player.Type << 4) + (int)PlayerChange.Leave));
+                if (Program.Config.STDOUT == true)
+                    Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, player.Type, Config.Name);
+
+                SendToAll(change);
+                player.Disconnect();
+            }
             else if (player.Type == (int)PlayerType.Observer)
             {
                 Observers.Remove(player);
@@ -284,12 +305,18 @@ namespace YGOCore.Game
                 Players[pos] = player;
                 player.Type = pos;
                 player.SendTypeChange();
+
+                IsWaiting[player.Type] = false;
+                WaitTimers[player.Type] = DateTime.UtcNow;
             }
             else
             {
                 Observers.Remove(player);
                 Players[pos] = player;
                 player.Type = pos;
+
+                IsWaiting[player.Type] = false;
+                WaitTimers[player.Type] = DateTime.UtcNow;
 
                 GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
                 enter.Write(player.Name, 20);
@@ -319,6 +346,7 @@ namespace YGOCore.Game
                 return;
             if (Program.Config.STDOUT == true)
                 Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, player.Type, Config.Name);
+
             Players[player.Type] = null;
             IsReady[player.Type] = false;
             Observers.Add(player);
@@ -365,6 +393,13 @@ namespace YGOCore.Game
             if (IsReady[player.Type] == ready)
                 return;
 
+            // WaitTimers
+            IsWaiting[player.Type] = ready;
+            if (!ready)
+            {
+                WaitTimers[player.Type] = DateTime.UtcNow;
+            }
+
             if (ready)
             {
                 bool ocg = Config.Rule == 0 || Config.Rule == 2;
@@ -403,7 +438,7 @@ namespace YGOCore.Game
         {
             if (State != GameState.Lobby)
                 return;
-            if (pos >= Players.Length || !player.Equals(HostPlayer) || player.Equals(Players[pos]) || Players[pos] == null)
+            if (pos >= Players.Length || !player.Equals(HostPlayer) /* || player.Equals(Players[pos]) */ || Players[pos] == null)
                 return;
             RemovePlayer(Players[pos]);
             if (Program.Config.STDOUT == true)
@@ -942,11 +977,51 @@ namespace YGOCore.Game
                     m_timelimit[m_lastresponse] = 0;
                 m_time = null;
             }
+            // if (WaitTimer != null)
         }
 
         private int m_lasttick;
         public void TimeTick()
         {
+            if (State == GameState.Lobby)
+            {
+                for (int i = 0; i < Players.Length; i++)
+                {
+                    // how to judge whether an object equals to null or not?
+                    if (Players[i] == null) {
+                        continue;
+                    }
+
+                    if (IsWaiting[i] || Players[i].Type == (int)PlayerType.Observer) {
+                        continue;
+                    }
+
+                    TimeSpan elapsed = DateTime.UtcNow - WaitTimers[i];
+
+                    if (elapsed.TotalMilliseconds >= 7000)
+                    {
+                        if (Players[i].Equals(HostPlayer))
+                        {
+                            int len = Players.Length;
+                            bool sign = true;
+                            for (int j = 1; j < len; j++)
+                            {
+                                if (Players[(i + j) % len] != null) { 
+                                    KickPlayer(HostPlayer, i);
+                                    sign = false;
+                                    break;
+                                }
+                            }
+                            if (sign) { }
+                        }
+                        else
+                        {
+                            MoveToObserver(Players[i]);
+                        }
+                    }
+                }
+            }
+
             if (State == GameState.Duel)
             {
                 if (m_time != null)
@@ -1034,6 +1109,7 @@ namespace YGOCore.Game
 
                 }
             }
+
             if (State == GameState.Hand)
             {
                 TimeSpan elapsed = DateTime.UtcNow - RPSTimer;
