@@ -233,25 +233,40 @@ namespace YGOCore.Game
         public void RemovePlayer(Player player)
         {
             if (player.Equals(HostPlayer) && State == GameState.Lobby) {
-                if (player.Type == (int)PlayerType.Observer) {
-                    m_room.Close();
-                    return;
-                }
-
-                Players[player.Type] = null;
-                IsReady[player.Type] = false;
                 HostPlayer = null;
+                
+                if (player.Type == (int)PlayerType.Observer)
+                {
+                    Observers.Remove(player);
+                    if (State == GameState.Lobby)
+                    {
+                        GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
+                        nwatch.Write((short)Observers.Count);
+                        SendToAll(nwatch);
+                        if (Program.Config.STDOUT == true)
+                            Console.WriteLine("::::spectator|{1}|{0}", Observers.Count, Config.Name);
+                    }
+                    //   if (Program.Config.STDOUT == true)        
+                    //       Console.WriteLine("{0} - disconnected", player.Name); //Need API
+                    player.Disconnect();
+                }
+                else
+                {
+                    Players[player.Type] = null;
+                    IsReady[player.Type] = false;
 
-                GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
-                change.Write((byte)((player.Type << 4) + (int)PlayerChange.Leave));
-                if (Program.Config.STDOUT == true)
-                    Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, player.Type, Config.Name);
+                    GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
+                    change.Write((byte)((player.Type << 4) + (int)PlayerChange.Leave));
+                    if (Program.Config.STDOUT == true)
+                        Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, player.Type, Config.Name);
 
-                SendToAll(change);
-                player.Disconnect();
+                    SendToAll(change);
+                    player.Disconnect();
+                }
             }
             else if (player.Type == (int)PlayerType.Observer)
             {
+
                 Observers.Remove(player);
                 if (State == GameState.Lobby)
                 {
