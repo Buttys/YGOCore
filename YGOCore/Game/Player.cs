@@ -41,7 +41,7 @@ namespace YGOCore.Game
         public void SendTypeChange()
         {
             GameServerPacket packet = new GameServerPacket(StocMessage.TypeChange);
-            packet.Write((byte)(Type + (Game.HostPlayer.Equals(this) ? (int)PlayerType.Host : 0)));
+            packet.Write((byte)(Type + (Game.HostPlayer != null && Game.HostPlayer.Equals(this) ? (int)PlayerType.Host : 0)));
             Send(packet);
         }
 

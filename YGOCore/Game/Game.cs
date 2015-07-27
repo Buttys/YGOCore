@@ -233,7 +233,11 @@ namespace YGOCore.Game
         public void RemovePlayer(Player player)
         {
             if (player.Equals(HostPlayer) && State == GameState.Lobby) {
-                // m_room.Close(); // change logic
+                if (player.Type == (int)PlayerType.Observer) {
+                    m_room.Close();
+                    return;
+                }
+
                 Players[player.Type] = null;
                 IsReady[player.Type] = false;
                 HostPlayer = null;
