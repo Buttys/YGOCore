@@ -295,6 +295,17 @@ namespace YGOCore.Game
             }
             else
                 Surrender(player, 4, true);
+
+            // close room if nobody is here
+            foreach (Player p in Players)
+            {
+                if (p != null)
+                    return;
+            }
+            if (Observers.Count.Equals(0))
+            {
+                m_room.Close();
+            }
         }
 
         public void MoveToDuelist(Player player)
