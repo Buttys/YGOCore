@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YGOCore", "YGOCore\YGOCore.csproj", "{96C45ACA-7729-4147-AD99-B829EFAD23B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcgWrapper", "OcgWrapper\OcgWrapper.csproj", "{7788970E-2325-4B42-A5A7-BB0EE496FCE5}"
@@ -35,6 +37,7 @@ Global
 		{7788970E-2325-4B42-A5A7-BB0EE496FCE5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7788970E-2325-4B42-A5A7-BB0EE496FCE5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7788970E-2325-4B42-A5A7-BB0EE496FCE5}.Release|x86.ActiveCfg = Release|Any CPU
+		{7788970E-2325-4B42-A5A7-BB0EE496FCE5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
