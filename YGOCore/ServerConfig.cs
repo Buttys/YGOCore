@@ -15,7 +15,19 @@ namespace YGOCore
         public bool HandShuffle { get; private set; }
         public bool AutoEndTurn { get; private set; }
         public int ClientVersion { get; private set; }
+	    public bool SplashScreen { get; private set; }
+	    public bool Ready { get; private set; }
+        public bool STDOUT { get; private set; }
+        public bool MyCard { get; private set; }
+        public bool Recycle { get; private set; }
+        public int MainCountMax { get; private set; }
+        public int MainCountMin { get; private set; }
+        public int ExtraCount { get; private set; }
 
+
+			 
+			   
+			 
         public ServerConfig()
         {
             ClientVersion = 0x1332;
@@ -28,9 +40,17 @@ namespace YGOCore
             ConsoleLog = true;
             HandShuffle = false;
             AutoEndTurn = true;
+			SplashScreen = true;
+			Ready = false;
+            STDOUT = false;
+            MyCard = false;
+            Recycle = true;
+            MainCountMax = 60;
+            MainCountMin = 40;
+            ExtraCount = 15;
         }
 
-        public bool Load(string file = "config.txt")
+        public bool Load(string file = "config.ini")
         {
             if (File.Exists(file))
             {
@@ -81,6 +101,27 @@ namespace YGOCore
                                 break;
                             case "clientversion":
                                 ClientVersion = Convert.ToInt32(value, 16);
+                                break;
+							case "splashscreen":
+                                SplashScreen = Convert.ToBoolean(value);
+                                break;
+							case "stdoutsupport":
+                                STDOUT = Convert.ToBoolean(value);
+                                break;
+                            case "mycardnotation":
+                                MyCard = Convert.ToBoolean(value);
+                                break;
+                            case "recycle":
+                                Recycle = Convert.ToBoolean(value);
+                                break;
+                            case "maxdecksize":
+                                MainCountMax = Convert.ToInt32(value);
+                                break;
+                            case "mindecksize":
+                                MainCountMin = Convert.ToInt32(value);
+                                break;
+                            case "maxextradecksize":
+                                ExtraCount = Convert.ToInt32(value);
                                 break;
                         }
                     }

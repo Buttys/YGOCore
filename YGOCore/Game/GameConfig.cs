@@ -2,19 +2,19 @@
 
 namespace YGOCore.Game
 {
-    public class GameConfig
+    public class GameConfig : IGameConfig
     {
-        public int LfList { get; private set; }
-        public int Rule { get; private set; }
-        public int Mode { get; private set; }
-        public bool EnablePriority { get; private set; }
-        public bool NoCheckDeck { get; private set; }
-        public bool NoShuffleDeck { get; private set; }
-        public int StartLp { get; private set; }
-        public int StartHand { get; private set; }
-        public int DrawCount { get; private set; }
-        public int GameTimer { get; private set; }
-        public string Name { get; private set; }
+        public int LfList { get; set; }
+        public int Rule { get; set; }
+        public int Mode { get; set; }
+        public bool EnablePriority { get; set; }
+        public bool NoCheckDeck { get; set; }
+        public bool NoShuffleDeck { get; set; }
+        public int StartLp { get; set; }
+        public int StartHand { get; set; }
+        public int DrawCount { get; set; }
+        public int GameTimer { get; set; }
+        public string Name { get; set; }
 
         public GameConfig(string info)
         {
@@ -29,7 +29,7 @@ namespace YGOCore.Game
                 StartLp = 8000;
                 StartHand = 5;
                 DrawCount = 1;
-                GameTimer = 120;
+                GameTimer = 180;
                 Name = GameManager.RandomRoomName();
             }
             else
@@ -65,7 +65,7 @@ namespace YGOCore.Game
 
                 Rule = int.Parse(rules[0].ToString());
                 Mode = int.Parse(rules[1].ToString());
-                GameTimer = int.Parse(rules[2].ToString()) == 0 ? 120 : 60;
+                GameTimer = int.Parse(rules[2].ToString()) == 0 ? 180 : 300;
                 EnablePriority = rules[3] == 'T' || rules[3] == '1';
                 NoCheckDeck = rules[4] == 'T' || rules[4] == '1';
                 NoShuffleDeck = rules[5] == 'T' || rules[5] == '1';
@@ -80,7 +80,7 @@ namespace YGOCore.Game
                 StartHand = int.Parse(list[2]);
                 DrawCount = int.Parse(list[3]);
 
-                Name = list[4];
+                Name = gameinfo;
             }
             catch (Exception)
             {
@@ -93,7 +93,7 @@ namespace YGOCore.Game
                 StartLp = 8000;
                 StartHand = 5;
                 DrawCount = 1;
-                GameTimer = 120;
+                GameTimer = 180;
                 Name = GameManager.RandomRoomName();
                 return;
             }

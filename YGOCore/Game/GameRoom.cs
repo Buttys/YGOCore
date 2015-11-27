@@ -9,7 +9,7 @@ namespace YGOCore.Game
         public bool IsOpen { get; private set; }
         private bool m_closePending { get; set; }
 
-        public GameRoom(GameConfig config)
+        public GameRoom(IGameConfig config)
         {
             m_clients = new List<GameClient>();
             Game = new Game(this, config);

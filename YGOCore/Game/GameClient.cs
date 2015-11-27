@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using YGOCore;
 
 namespace YGOCore.Game
 {
@@ -38,6 +39,7 @@ namespace YGOCore.Game
             m_client.Close();
             if(InGame())
                 m_room.RemoveClient(this);
+
         }
 
         public bool InGame()

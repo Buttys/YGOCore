@@ -2,6 +2,7 @@
 using YGOCore.Game;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using YGOCore;
 
 namespace YGOCore
 {
@@ -10,7 +11,7 @@ namespace YGOCore
 
         static Dictionary<string, GameRoom> m_rooms = new Dictionary<string,GameRoom>();
 
-        public static GameRoom CreateOrGetGame(GameConfig config)
+        public static GameRoom CreateOrGetGame(IGameConfig config)
         {
             if (m_rooms.ContainsKey(config.Name))
                 return m_rooms[config.Name];
@@ -63,7 +64,7 @@ namespace YGOCore
             return filteredRooms[Program.Random.Next(0, filteredRooms.Count)];
         }
 
-        private static GameRoom CreateRoom(GameConfig config)
+        private static GameRoom CreateRoom(IGameConfig config)
         {
             GameRoom room = new GameRoom(config);
             m_rooms.Add(config.Name, room);
@@ -86,6 +87,10 @@ namespace YGOCore
             {
                 m_rooms.Remove(room);
                 Logger.WriteLine("Game--");
+                if (YGOCore.Program.Config.STDOUT == true)
+                    Console.WriteLine("::::network-end");
+                if (YGOCore.Program.Config.Recycle == false)
+                    System.Environment.Exit(0);
             }
         }
 

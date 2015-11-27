@@ -1,15 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using OcgWrapper;
 using OcgWrapper.Enums;
 using YGOCore.Game.Enums;
+using YGOCore;
 
 namespace YGOCore.Game
 {
     public class Game
     {
-        public GameConfig Config { get; private set; }
+        public IGameConfig Config { get; private set; }
         public Banlist Banlist { get; private set; }
         public bool IsMatch { get; private set; }
         public bool IsTag { get; private set; }
@@ -25,6 +26,8 @@ namespace YGOCore.Game
 
         public Player[] Players { get; private set; }
         public Player[] CurPlayers { get; private set; }
+        public DateTime[] WaitTimers { get; private set; }
+        public bool[] IsWaiting { get; private set; }
         public bool[] IsReady { get; private set; }
         public List<Player> Observers { get; private set; }
         public Player HostPlayer { get; private set; }
@@ -47,7 +50,7 @@ namespace YGOCore.Game
         private bool m_matchKill;
         private bool m_swapped;
 
-        public Game(GameRoom room, GameConfig config)
+        public Game(GameRoom room, IGameConfig config)
         {
             Config = config;
             State = GameState.Lobby;
@@ -57,11 +60,13 @@ namespace YGOCore.Game
             LifePoints = new int[2];
             Players = new Player[IsTag ? 4 : 2];
             CurPlayers = new Player[2];
+            WaitTimers = new DateTime[IsTag ? 4 : 2];
+            IsWaiting = new bool[IsTag ? 4 : 2];
             IsReady = new bool[IsTag ? 4 : 2];
             m_handResult = new int[2];
             m_timelimit = new int[2];
             m_bonustime = new int[2];
-            m_matchResult = new int[3];
+            m_matchResult = new int[6];
             Observers = new List<Player>();
             if (config.LfList >= 0 && config.LfList < BanlistManager.Banlists.Count)
                 Banlist = BanlistManager.Banlists[config.LfList];
@@ -101,7 +106,7 @@ namespace YGOCore.Game
 
         public void SendToAllBut(GameServerPacket packet, int except)
         {
-            if(except < CurPlayers.Length)
+            if (except < CurPlayers.Length)
                 SendToAllBut(packet, CurPlayers[except]);
             else
                 SendToAll(packet);
@@ -138,6 +143,11 @@ namespace YGOCore.Game
 
         public void AddPlayer(Player player)
         {
+            int pos = GetAvailablePlayerPos();
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::join-slot|{2}|{1}|{0}", player.Name, pos, Config.Name);
+
+
             if (State != GameState.Lobby)
             {
                 player.Type = (int)PlayerType.Observer;
@@ -147,6 +157,8 @@ namespace YGOCore.Game
                 player.SendTypeChange();
                 player.Send(new GameServerPacket(StocMessage.DuelStart));
                 Observers.Add(player);
+
+
                 if (State == GameState.Duel)
                     InitNewSpectator(player);
                 return;
@@ -155,7 +167,7 @@ namespace YGOCore.Game
             if (HostPlayer == null)
                 HostPlayer = player;
 
-            int pos = GetAvailablePlayerPos();
+           
             if (pos != -1)
             {
                 GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
@@ -166,15 +178,25 @@ namespace YGOCore.Game
                 Players[pos] = player;
                 IsReady[pos] = false;
                 player.Type = pos;
+
+                
             }
             else
             {
                 GameServerPacket watch = new GameServerPacket(StocMessage.HsWatchChange);
                 watch.Write((short)(Observers.Count + 1));
+                if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::spectator|{1}|{0}", Observers.Count,Config.Name);
                 SendToAll(watch);
 
                 player.Type = (int)PlayerType.Observer;
                 Observers.Add(player);
+               
+            }
+
+            if (player.Type != (int)PlayerType.Observer) {
+                WaitTimers[player.Type] = DateTime.UtcNow;
+                IsWaiting[player.Type] = false;
             }
 
             SendJoinGame(player);
@@ -203,35 +225,87 @@ namespace YGOCore.Game
                 GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
                 nwatch.Write((short)Observers.Count);
                 player.Send(nwatch);
+                if (Program.Config.STDOUT == true)
+                    Console.WriteLine("::::spectator|{1}|{0}", Observers.Count, Config.Name);
             }
         }
 
         public void RemovePlayer(Player player)
         {
-            if (player.Equals(HostPlayer) && State == GameState.Lobby)
-                m_room.Close();
+            if (player.Equals(HostPlayer) && State == GameState.Lobby) {
+                HostPlayer = null;
+                
+                if (player.Type == (int)PlayerType.Observer)
+                {
+                    Observers.Remove(player);
+                    if (State == GameState.Lobby)
+                    {
+                        GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
+                        nwatch.Write((short)Observers.Count);
+                        SendToAll(nwatch);
+                        if (Program.Config.STDOUT == true)
+                            Console.WriteLine("::::spectator|{1}|{0}", Observers.Count, Config.Name);
+                    }
+                    //   if (Program.Config.STDOUT == true)        
+                    //       Console.WriteLine("{0} - disconnected", player.Name); //Need API
+                    player.Disconnect();
+                }
+                else
+                {
+                    Players[player.Type] = null;
+                    IsReady[player.Type] = false;
+
+                    GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
+                    change.Write((byte)((player.Type << 4) + (int)PlayerChange.Leave));
+                    if (Program.Config.STDOUT == true)
+                        Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, player.Type, Config.Name);
+
+                    SendToAll(change);
+                    player.Disconnect();
+                }
+            }
             else if (player.Type == (int)PlayerType.Observer)
             {
+
                 Observers.Remove(player);
                 if (State == GameState.Lobby)
                 {
                     GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
-                    nwatch.Write((short) Observers.Count);
+                    nwatch.Write((short)Observers.Count);
                     SendToAll(nwatch);
+                    if (Program.Config.STDOUT == true)
+                        Console.WriteLine("::::spectator|{1}|{0}", Observers.Count,Config.Name);
                 }
+             //   if (Program.Config.STDOUT == true)        
+             //       Console.WriteLine("{0} - disconnected", player.Name); //Need API
                 player.Disconnect();
             }
             else if (State == GameState.Lobby)
             {
                 Players[player.Type] = null;
                 IsReady[player.Type] = false;
+
                 GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
-                change.Write((byte)((player.Type << 4) + (int) PlayerChange.Leave));
+                change.Write((byte)((player.Type << 4) + (int)PlayerChange.Leave));
+                if (Program.Config.STDOUT == true)
+                    Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, player.Type, Config.Name);
+
                 SendToAll(change);
                 player.Disconnect();
             }
             else
                 Surrender(player, 4, true);
+
+            // close room if nobody is here
+            foreach (Player p in Players)
+            {
+                if (p != null)
+                    return;
+            }
+            if (Observers.Count.Equals(0))
+            {
+                m_room.Close();
+            }
         }
 
         public void MoveToDuelist(Player player)
@@ -239,6 +313,7 @@ namespace YGOCore.Game
             if (State != GameState.Lobby)
                 return;
             int pos = GetAvailablePlayerPos();
+            
             if (pos == -1)
                 return;
             if (player.Type != (int)PlayerType.Observer)
@@ -251,6 +326,8 @@ namespace YGOCore.Game
                     pos = (pos + 1) % 4;
 
                 GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
+                if (Program.Config.STDOUT == true)
+                    Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, player.Type, Config.Name);
                 change.Write((byte)((player.Type << 4) + pos));
                 SendToAll(change);
 
@@ -258,12 +335,18 @@ namespace YGOCore.Game
                 Players[pos] = player;
                 player.Type = pos;
                 player.SendTypeChange();
+
+                IsWaiting[player.Type] = false;
+                WaitTimers[player.Type] = DateTime.UtcNow;
             }
             else
             {
                 Observers.Remove(player);
                 Players[pos] = player;
                 player.Type = pos;
+
+                IsWaiting[player.Type] = false;
+                WaitTimers[player.Type] = DateTime.UtcNow;
 
                 GameServerPacket enter = new GameServerPacket(StocMessage.HsPlayerEnter);
                 enter.Write(player.Name, 20);
@@ -272,10 +355,15 @@ namespace YGOCore.Game
 
                 GameServerPacket nwatch = new GameServerPacket(StocMessage.HsWatchChange);
                 nwatch.Write((short)Observers.Count);
+                
                 SendToAll(nwatch);
 
                 player.SendTypeChange();
             }
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::join-slot|{2}|{1}|{0}", player.Name, pos, Config.Name);
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::spectator|{1}|{0}", Observers.Count, Config.Name);
         }
 
         public void MoveToObserver(Player player)
@@ -286,6 +374,9 @@ namespace YGOCore.Game
                 return;
             if (IsReady[player.Type])
                 return;
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, player.Type, Config.Name);
+
             Players[player.Type] = null;
             IsReady[player.Type] = false;
             Observers.Add(player);
@@ -296,14 +387,20 @@ namespace YGOCore.Game
 
             player.Type = (int)PlayerType.Observer;
             player.SendTypeChange();
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::spectator|{1}|{0}", Observers.Count, Config.Name);
         }
 
         public void Chat(Player player, string msg)
         {
             GameServerPacket packet = new GameServerPacket(StocMessage.Chat);
             packet.Write((short)player.Type);
+            if (player.Type == (int)PlayerType.Observer)
+                msg = player.Name + ": " + msg;
             packet.Write(msg, msg.Length + 1);
             SendToAllBut(packet, player);
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::chat|{2}|{0}|{1}", player.Name, msg, Config.Name);
         }
 
         public void ServerMessage(string msg)
@@ -313,6 +410,8 @@ namespace YGOCore.Game
             packet.Write((short)PlayerType.Yellow);
             packet.Write(finalmsg, finalmsg.Length + 1);
             SendToAll(packet);
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::chat|{1}|[Server]|{0}", msg, Config.Name);
         }
 
         public void SetReady(Player player, bool ready)
@@ -323,6 +422,13 @@ namespace YGOCore.Game
                 return;
             if (IsReady[player.Type] == ready)
                 return;
+
+            // WaitTimers
+            IsWaiting[player.Type] = ready;
+            if (!ready)
+            {
+                WaitTimers[player.Type] = DateTime.UtcNow;
+            }
 
             if (ready)
             {
@@ -353,6 +459,8 @@ namespace YGOCore.Game
 
             GameServerPacket change = new GameServerPacket(StocMessage.HsPlayerChange);
             change.Write((byte)((player.Type << 4) + (int)(ready ? PlayerChange.Ready : PlayerChange.NotReady)));
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::lock-slot|{2}|{1}|{0}", ready, player.Type, Config.Name);
             SendToAll(change);
         }
 
@@ -360,9 +468,11 @@ namespace YGOCore.Game
         {
             if (State != GameState.Lobby)
                 return;
-            if (pos >= Players.Length || !player.Equals(HostPlayer) || player.Equals(Players[pos]) || Players[pos] == null)
+            if (pos >= Players.Length || !player.Equals(HostPlayer) /* || player.Equals(Players[pos]) */ || Players[pos] == null)
                 return;
             RemovePlayer(Players[pos]);
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::left-slot|{2}|{1}|{0}", player.Name, pos, Config.Name);
         }
 
         public void StartDuel(Player player)
@@ -380,6 +490,9 @@ namespace YGOCore.Game
             }
 
             State = GameState.Hand;
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::startduel|{0}", Config.Name);
+
             SendToAll(new GameServerPacket(StocMessage.DuelStart));
 
             SendHand();
@@ -578,12 +691,15 @@ namespace YGOCore.Game
 
         public void Surrender(Player player, int reason, bool force = false)
         {
-            if(!force)
+            if (!force)
                 if (State != GameState.Duel)
                     return;
             if (player.Type == (int)PlayerType.Observer)
                 return;
             GameServerPacket win = new GameServerPacket(GameMessage.Win);
+         //   if (Program.Config.STDOUT == true)
+         //       Console.WriteLine("Surrender - {0}", player.Name);  //Need API
+
             int team = player.Type;
             if (IsTag)
                 team = player.Type >= 2 ? 1 : 0;
@@ -601,6 +717,8 @@ namespace YGOCore.Game
         public void RecordWin(int team, int reason, bool force = false)
         {
             //Record user win here
+            if (Program.Config.STDOUT == true)
+                Console.WriteLine("::::endduel|{1}|{0}|{1}", team, reason, Config.Name);
         }
 
         public void RefreshAll()
@@ -889,11 +1007,51 @@ namespace YGOCore.Game
                     m_timelimit[m_lastresponse] = 0;
                 m_time = null;
             }
+            // if (WaitTimer != null)
         }
 
         private int m_lasttick;
-        public void  TimeTick()
+        public void TimeTick()
         {
+            if (State == GameState.Lobby)
+            {
+                for (int i = 0; i < Players.Length; i++)
+                {
+                    // how to judge whether an object equals to null or not?
+                    if (Players[i] == null) {
+                        continue;
+                    }
+
+                    if (IsWaiting[i] || Players[i].Type == (int)PlayerType.Observer) {
+                        continue;
+                    }
+
+                    TimeSpan elapsed = DateTime.UtcNow - WaitTimers[i];
+
+                    if (elapsed.TotalMilliseconds >= 7000)
+                    {
+                        if (Players[i].Equals(HostPlayer))
+                        {
+                            int len = Players.Length;
+                            bool sign = true;
+                            for (int j = 1; j < len; j++)
+                            {
+                                if (Players[(i + j) % len] != null) { 
+                                    KickPlayer(HostPlayer, i);
+                                    sign = false;
+                                    break;
+                                }
+                            }
+                            if (sign) { }
+                        }
+                        else
+                        {
+                            MoveToObserver(Players[i]);
+                        }
+                    }
+                }
+            }
+
             if (State == GameState.Duel)
             {
                 if (m_time != null)
@@ -930,7 +1088,7 @@ namespace YGOCore.Game
             if (State == GameState.Side)
             {
                 TimeSpan elapsed = DateTime.UtcNow - SideTimer;
-                int currentTick = (int) (120 - elapsed.TotalSeconds);
+                int currentTick = (int)(120 - elapsed.TotalSeconds);
                 if (currentTick == 60 || currentTick == 30 || currentTick == 10 || currentTick < 6)
                 {
                     if (m_lasttick != currentTick)
@@ -949,7 +1107,7 @@ namespace YGOCore.Game
                         return;
                     }
 
-                    Surrender(!IsReady[0] ? Players[0]:Players[1],3,true);
+                    Surrender(!IsReady[0] ? Players[0] : Players[1], 3, true);
                     State = GameState.End;
                     End();
                 }
@@ -981,7 +1139,8 @@ namespace YGOCore.Game
 
                 }
             }
-            if (State==GameState.Hand)
+
+            if (State == GameState.Hand)
             {
                 TimeSpan elapsed = DateTime.UtcNow - RPSTimer;
                 int currentTick = (60 - elapsed.Seconds);
@@ -997,7 +1156,7 @@ namespace YGOCore.Game
 
                 if ((int)elapsed.TotalMilliseconds >= 60000)
                 {
-                    if (m_handResult[0]!= 0)
+                    if (m_handResult[0] != 0)
                         Surrender(Players[1], 3, true);
                     else if (m_handResult[1] != 0)
                         Surrender(Players[0], 3, true);
@@ -1052,7 +1211,7 @@ namespace YGOCore.Game
             for (int i = 0; i < m_duelCount; i++)
                 wins[m_matchResult[i]]++;
 
-            bool draw = wins[0]==wins[1];
+            bool draw = wins[0] == wins[1];
 
             if (draw)
                 return 2;
@@ -1178,7 +1337,7 @@ namespace YGOCore.Game
             for (int i = 0; i < hand1; i++)
                 draw.Write(0);
             player.Send(draw);
-            
+
             draw = new GameServerPacket(GameMessage.Draw);
             draw.Write((byte)1);
             draw.Write((byte)hand2);
@@ -1327,9 +1486,9 @@ namespace YGOCore.Game
         private static IList<int> ShuffleCards(Random rand, IEnumerable<int> cards)
         {
             List<int> shuffled = new List<int>(cards);
-            for (int i = shuffled.Count-1 ; i > 0; --i)
+            for (int i = shuffled.Count - 1; i > 0; --i)
             {
-                int pos = rand.Next(i+1);
+                int pos = rand.Next(i + 1);
                 int tmp = shuffled[i];
                 shuffled[i] = shuffled[pos];
                 shuffled[pos] = tmp;
@@ -1339,7 +1498,7 @@ namespace YGOCore.Game
 
         public void BonusTime(GameMessage message)
         {
-            switch(message)
+            switch (message)
             {
                 case GameMessage.Summoning:
                 case GameMessage.SpSummoning:

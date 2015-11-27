@@ -44,7 +44,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Mono.Data.Sqlite" Condition=" '$(OS)' == 'Unix' " />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameManager.cs" />
@@ -67,6 +66,8 @@
     <Compile Include="Game\GameClientPacket.cs" />
     <Compile Include="Game\GameRoom.cs" />
     <Compile Include="Game\GameServerPacket.cs" />
+    <Compile Include="Game\IGameConfig.cs" />
+    <Compile Include="Game\MyCardStyleGameConfig.cs" />
     <Compile Include="Game\Player.cs" />
     <Compile Include="Game\Replay.cs" />
     <Compile Include="Game\ReplayHeader.cs" />
