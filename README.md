@@ -8,11 +8,9 @@ YGOCore
 ===================
 YGOCore is a duel server for the popular game YGOPro written in C#.
 
-## Beta Details ##
+## Details ##
 
-The main goal of this project is to lower the entry level for new and experienced programmers.
-
-The server now runs on windows and linux systems when compiled with mono and supplyed with the native ocgcore.dll/so for that system.
+The server runs on windows and linux systems when compiled with mono and supplyed with the native ocgcore.dll/so for that system.
 
 A sample client to work with the server can be found here: https://github.com/Buttys/ygopro
 
