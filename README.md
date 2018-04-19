@@ -1,3 +1,9 @@
+This client is no longer supported by the latest version of YGOPro. As I no longer work on this project I would recommend you check out the one currently managed by my friend IceYGO!
+
+- https://github.com/IceYGO/ygosharp
+
+Thanks for the support, the code here is available for anyone interested learning the basics of ygopro client-server communication.
+
 YGOCore
 ===================
 YGOCore is a duel server for the popular game YGOPro written in C#.
